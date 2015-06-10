@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}
+Faltas Disciplinarias
+{% endblock %}
+{% block subtitle %}
+Lista de últimas faltas
+{% endblock %}
+{% block content %}
+{% if ultimas_faltas %}
+<div class="table-responsive">
+<table class="table table-bordered table-hover">
+<thead>
+<tr>
+    <th>Fecha</th>
+    <th>Estudiante</th>
+    <th>Profesor</th>
+    <th>Categoría</th>
+    <th>Estado</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for falta in ultimas_faltas %}
+    <tr>
+        <td><a href="/faltas/detalle/{{falta.id}}/">{{falta.fecha}}</a></td>
+        <td><a href="/">{{falta.matricula.estudiante.name}}</td>
+        <td><a href="/">{{falta.profesor.name}}</td>
+        <td><a href="/">{{falta.categoria}}</td>
+        <td><a>
+        {% if falta.activo == True %}
+        Activo
+        {% else %}
+        No activo
+        {% endif %}
+        </a></td>
+
+    </tr>
+    {% endfor %}
+</tbody>
+
+</table>
+</div>
+{% else %}
+    <p>No applications are available.</p>
+{% endif %}
+
+{% endblock %}
+

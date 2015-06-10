@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}
+Registro de nueva falta
+{% endblock %}
+{% block content %}
+    <form id=regitro_falta" method="post" action="/faltas/registro/">
+        {% csrf_token %}
+        
+        {{form.non_field_errors}}
+        {% for field in form %}
+
+            <div class = "fieldWrapper">
+            {{field.errors }}
+            {{field.label_tag }}
+            {{ field }}
+            </div>
+        {% endfor %}
+        <input type="submit" name="submit" value="Submit Falta" />
+{%  endblock %}
+

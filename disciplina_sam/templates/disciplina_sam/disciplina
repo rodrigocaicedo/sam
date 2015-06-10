@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}
+Registros Disciplinarios
+{% endblock %}
+{% block subtitle %}
+Lista de registros activos
+{% endblock %}
+{% block content %}
+                <div class = "row">
+                    <div class="col-lg-9">
+                        <ol class="breadcrumb">
+                            <li>
+                                <i class="fa fa-home"></i><a href="/faltas/"> Inicio</a>
+                            </li>
+                            <li>
+                                <i class="fa fa-search"></i><a href="/faltas/disciplina/busqueda/"> Buscar registro</a>
+                            </li>
+                            <li>
+                                <i class="fa fa-file-o"></i><a href="/faltas/disciplina/registro/"> Crear registro</a>
+                            </li>
+                        </ol>
+
+                        {% if ultimos_registros %}
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Fecha</th>
+                                            <th>Estudiante</th>
+                                            <th>Profesor</th>
+                                            <th>Categoría</th>
+                                            <th>Estado</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for falta in ultimos_registros %}
+                                            <tr>
+                                                <td><a href="/faltas/disciplina/detalle/{{falta.id}}/">{{falta.fecha}}</a></td>
+                                                <td>{{falta.matricula.estudiante.usuario.name}}</td>
+                                                <td>{{falta.carga_horario.profesor.usuario.name}}</td>
+                                                <td>{{falta.categoria}}</td>
+                                                <td>
+                                                {% if falta.activo == True %}<a href="/faltas/disciplina/estado/{{falta.id}}/">
+                                                Activo</a>
+                                                {% elif falta.activo == False %}
+                                                <a href="/faltas/disciplina/estado/{{falta.id}}/">No activo</a>
+                                                {% endif %}
+                                                <span class = "pull-right"><a href="/faltas/disciplina/detalle/crear/{{falta.id}}/"><trong>...</strong></a></span>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <p>No existe registros activos en el momento.</p>
+                        {% endif %}
+
+                    </div>
+                    <div class = "col-lg-3">
+
+                        
+                    
+                                    
+                    </div>
+                </div>
+
+
+{% endblock %}
+

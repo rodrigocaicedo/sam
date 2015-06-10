@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% load extras %}
+{% block title %}
+Categorías de registro disciplinario
+{% endblock %}
+{% block content %}
+                <div class="row">
+                    <div class="col-lg-12">
+                        <ol class="breadcrumb">
+                            <li>
+                                <i class="fa fa-home"></i><a href="/faltas/"> Inicio</a>
+                            </li>
+                            <li>
+                                <i class="fa fa-meh-o"></i><a href="/faltas/disciplina"> Disciplina</a>
+                            </li>
+                            <li>
+                                <i class="fa fa-check"></i><a href="/faltas/asistencia/"> Asistencia</a>
+                            </li>
+
+                        </ol>
+                    </div>
+                </div>
+
+    <div class="row">
+        <div class = "col-lg-6">
+            <div class="form-group">
+
+                <form id=regitro_falta" method="post" action="/faltas/configuracion/">
+                    {% csrf_token %}
+                    <ul>
+                        
+                        {{form.non_field_errors}}
+
+                            {% for field in form %}
+                            
+                                {{field.errors}}
+                                {{field.label_tag}}
+                                {{field|addcss:'form-group'}}
+                            </br>
+                        {% endfor %}
+                    
+                        <input type="submit" name="submit" value="Crear categoría" />
+                    </ul>
+
+            </div>
+        </div>
+        <div class = "col-lg-6">
+            {% if categorias %}
+                <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Valor</th>
+                            <th>Año Lectivo</th>
+                        </tr>
+                    </thead>
+                <tbody>
+            {% for categoria in categorias %}
+                <tr>
+                    <td>{{categoria.nombre}}</td>
+                    <td>{{categoria.valor}}</td>
+                    <td>{{categoria.periodo_lectivo.name}}</td>
+                </tr>
+            {% endfor %}
+            {% else %}
+                <p><strong>No existe categorías disciplinarias registradas.</strong></p>
+            {% endif %}
+                </tbody>
+                </table>
+
+        </div>
+    </div>
+
+{%  endblock %}
+

@@ -1,0 +1,55 @@
+from django.shortcuts import render, redirect, render_to_response
+from django.template import RequestContext
+from configuracion_sam.models import Falta, Seguimiento_De_Falta
+from configuracion_sam.forms import FaltaForma, AccionForma
+
+def index(request):
+    ultimas_faltas = Falta.objects.all().order_by('fecha')
+    context = {'ultimas_faltas':ultimas_faltas}
+    return render(request,'configuracion_sam/index.html',context)
+
+
+def crear(request):
+    context = RequestContext(request)
+    if request.method == 'POST':
+        form = FaltaForma(request.POST)
+        if form.is_valid():
+            falta = form.save()
+            falta.save()
+            return redirect(index)    
+        else:
+            print form.errors
+            return render_to_response('configuracion_sam/registro',{'form':form},context)
+    else:
+        form=FaltaForma()
+        return render_to_response('configuracion_sam/registro',{'form':form},context)
+
+def reportes(request):
+    context = RequestContext(request)
+    text = "Hello world"
+    return render(request,'configuracion_sam/reportes',{'text':text})    
+
+def detalle_falta(request, falta_id):
+    context = RequestContext(request)
+    falta = Falta.objects.get(pk = falta_id)
+#    detalle_falta = Seguimiento_De_Falta.objects.get(falta = falta_id)
+    detalle_falta = Seguimiento_De_Falta.objects.filter(falta = falta_id)
+    return render_to_response('configuracion_sam/detalle',{'falta':falta, 'detalle_falta':detalle_falta},context)
+
+def crear_detalle(request, falta_id):
+    falta = Falta.objects.get(pk = falta_id)
+    context = RequestContext(request)
+    if request.method=='POST':
+        form = AccionForma(request.POST)
+        if form.is_valid():
+            accion =  Falta.objects.get(pk = falta_id)
+            form = AccionForma(request.POST,instance=accion)
+            form.save()
+            return render_to_response('configuracion_sam/crear_detalle',{'form':form,'falta_id':falta_id,'falta':falta},context)
+        else:
+            print form.errors
+            return render_to_response('configuracion_sam/crear_detalle',{'form':form,'falta_id':falta_id,'falta':falta},context)
+    else:
+        form=AccionForma()
+        return render_to_response('configuracion_sam/crear_detalle',{'form':form,'falta_id':falta_id,'falta':falta}, context)
+# Create your views here.

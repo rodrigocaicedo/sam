@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}
+Categorización de Faltas
+{% endblock %}
+{% block subtitle %}
+Lista de últimas faltas
+{% endblock %}
+{% block content %}
+{% if categorias %}
+<div class="table-responsive">
+<table class="table table-bordered table-hover">
+<thead>
+<tr>
+    <th>Nombre</th>
+    <th>Valor</th>
+</tr>
+</thead>
+<tbody>
+    {% for categoria in categorias %}
+    <tr>
+        <td><a>{{categoria.nombre}}</a></td>
+        <td><a>{{categoria.valor}}</a></td>
+
+    </tr>
+    {% endfor %}
+</tbody>
+
+</table>
+</div>
+{% else %}
+    <p>No existen categorías registradas.</p>
+{% endif %}
+
+{% endblock %}
+

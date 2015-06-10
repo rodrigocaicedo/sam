@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% load extras %}
+{% block title %}
+Nuevo registro disciplinario
+{% endblock %}
+{% block content %}
+                <div class="row">
+                    <div class="col-lg-12">
+                        <ol class="breadcrumb">
+                            <li>
+                                <i class="fa fa-home"></i><a href="/faltas/"> Inicio</a>
+                            </li>
+                            <li>
+                                <i class="fa fa-meh-o"></i><a href="/faltas/disciplina"> Disciplina</a>
+                            </li>
+                            <li>
+                                <i class="fa fa-search"></i><a href="/faltas/disciplina/busqueda/"> Buscar registro</a>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+    <form id=regitro_falta" method="post" action="/faltas/disciplina/registro/">
+        {% csrf_token %}
+        
+        {{form.non_field_errors}}
+
+        <div class="form-group"></br>
+        {{error_datos.error_matricula}}
+        {{form.matricula.errors}}
+        {{form.matricula.label_tag}}
+        <input type="text" class="matricula" id="matricula" name="matricula">
+        </div>
+        
+        <div class="from-group"></br>
+        {{error_datos.error_carga_horario}}
+        {{form.carga_horario.errors}}
+        {{form.carga_horario.label_tag}}
+        <input type="text" class="carga_horario" id="carga_horario" name="carga_horario">
+        </div>
+
+        <div class="form-group">
+        </br>
+        {{error_datos.error_fecha}}
+        {{form.fecha.errors}}
+        {{form.fecha.label_tag}}
+        {{form.fecha|addcss:"datepicker"}}
+        </div>
+
+        <div class="form-group">
+        {{error_datos.error_categoria}}
+        {{form.categoria.errors}}
+        {{form.categoria.label_tag}}
+        {{form.categoria}}
+        </div>
+        
+
+        <div class="form-group">
+        {{form.detalle.errors}}
+        {{form.detalle.label_tag}}
+        {{form.detalle}}
+        </div>
+
+        <div class="form-group">
+        {{form.activo.errors}}
+        {{form.activo.label_tag}}
+        {{form.activo}}
+        </div>
+
+        <input type="submit" name="submit" value="Crear registro" />
+{%  endblock %}
+
+{% block scripts %}
+<script>$( ".datepicker" ).datepicker();</script>
+
+<script>
+$(function() {
+  $(".matricula").autocomplete({
+    source: "/faltas/ac_estudiante/",
+    minLength: 2,
+  });
+});
+</script>
+
+<script>
+$(function() {
+  $(".carga_horario").autocomplete({
+    source: "/faltas/ac_profesor/",
+    minLength: 2,
+  });
+});
+</script>
+<script>
+$(function() {
+  $(".categoria").autocomplete({
+    source: "/faltas/ac_categoria/",
+    minLength: 2,
+  });
+});
+</script>
+
+{% endblock %}
+

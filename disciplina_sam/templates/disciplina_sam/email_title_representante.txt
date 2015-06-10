@@ -1,0 +1,1 @@
+Incidente disciplinario: {{categoria}} - {{estudiante}} - {{ profesor }}

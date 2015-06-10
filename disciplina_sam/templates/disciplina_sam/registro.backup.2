@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}
+Registro de nueva falta
+{% endblock %}
+{% block content %}
+    <form id=regitro_falta" method="post" action="/faltas/registro/">
+        {% csrf_token %}
+        
+        {{form.non_field_errors}}
+        {{form.field_errors}}
+            <div class = "form-group"> 
+            
+            <input type="text" value="02/06/12" data-date-format="mm/dd/yy" class="datepicker">        
+            </div>
+        <input type="submit" name="submit" value="Registrar" />
+
+
+{%  endblock %}
+
+{% block scripts %}
+
+<script> $(".datepicker").datepicker(); </script>
+
+
+{% endblock %}

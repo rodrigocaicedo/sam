@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% load extras %}
+{% block title %}
+Registro de Seguimiento Disciplinario
+{% endblock %}
+{% block content %}
+<div class="row">
+    <div class ="col-lg-12">
+                <ol class="breadcrumb">
+                    <li>
+                        <i class="fa fa-home"></i><a href="/faltas/"> Inicio</a>
+                    </li>
+                    <li>
+                        <i class="fa fa-meh-o"></i><a href="/faltas/disciplina"> Disciplina</a>
+                    </li>
+                    <li>
+                        <i class="fa fa-search"></i><a href="/faltas/disciplina/busqueda/"> Buscar registro</a>
+                    </li>
+                    <li>
+                        <i class="fa fa-file-o"></i><a href="/faltas/disciplina/registro/"> Crear registro</a>
+                    </li>
+                    <li>
+                        <i class="fa fa-file-text"></i><a href="/faltas/disciplina/detalle/{{falta.id}}"> Registro Actual</a>
+                    </li>
+
+                </ol>
+    </dvi>
+<div class="row">
+    <div class="col-lg-6">
+            	<form id=regitro_accion" method="post" action="/faltas/disciplina/detalle/crear/{{falta.id}}/">
+                    {% csrf_token %}
+                    <div class="form-group">
+
+                        {{form.non_field_errors}}
+                    </div>
+                    <div class="form-group">
+                            {{form.fecha.errors}}{{form.fecha.label_tag}}</br>{{form.fecha|addcss:'datepicker'}}
+                    </div>
+                    <div class="form-group">
+                            {{form.accion.errors}}{{form.accion.label_tag}}</br>{{form.accion}}
+                    </div>
+ 
+                <input type="submit" name="submit" value="Registrar Acción" />
+                </br>
+    </div>
+
+
+    <div class = "col-lg-6">
+        <p><strong>Estudiante: </strong>{{falta.matricula.estudiante.usuario.name}}</p>
+        <p><strong>Fecha: </strong>{{falta.fecha}}</p>
+        <p><strong>Categoría: </strong>{{falta.categoria}}</p>
+        <p><strong>Profesor: </strong>{{falta.carga_horario.profesor.usuario.name}}</p>
+        <p><strong>Detalle: </strong>{{falta.detalle}}</p>
+        {% if falta.activo == True %}<p><strong>Estado: </strong>Activo</p>
+        {% elif falta.activo == False %}<p><strong>Estado: </strong>No activo</p>
+        {% endif %}
+        <p></p>
+        <p><strong>Acciones tomadas: </strong></p>
+        {% if detalle_falta %}
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for falta in detalle_falta %}
+                    <tr>
+                    <td>{{falta.fecha}}</td>
+                    <td>{{falta.accion}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+            <p><strong>No existe acciones de seguimiento para este registro.</strong></p>
+        {% endif %}
+    </div>
+</div>
+</br>
+<div class="row">
+    <div class ="col-lg-12">
+        <p><a href="/faltas/disciplina/editar/{{falta.id}}/">Editar registro</a> - <a href="/faltas/disciplina/estado/{{falta.id}}/">Cambiar el estado</a></p>
+    </div>
+</div>
+
+{%  endblock %}
+
+{% block scripts %}
+<script>$( ".datepicker" ).datepicker();</script>
+{% endblock %}
