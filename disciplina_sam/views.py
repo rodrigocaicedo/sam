@@ -69,6 +69,17 @@ def disciplina(request):
     return render(request,'disciplina_sam/disciplina',context)
 
 def busqueda_disciplina(request):
+    context = RequestContext(request)
+    if "q" in request.GET:
+        q_estudiante = request.GET["q_estudiante"]
+        q_profesor = request.GET["q_profesor"]
+        q_fecha = request.GET["q"]
+        q_categoria = request.GET["q_categoria"]
+        reportes = Falta.objects.filter(matricula__estudiante__usuario__name=q_estudiante).filter(carga_horario__profesor__usuario__name = q_profesor)
+        return render_to_response('disciplina_sam/reportes',{"nuevo":False, "results":reportes, "debug":q_estudiante},context)
+
+
+    return render_to_response('disciplina_sam/reportes',{},context)
     pass
 
 

@@ -49,7 +49,7 @@ Búsqueda de registros disciplinarios
         {{ debug }}
 {%if nuevo == True%}
 
-{% elif nuevo = False %}
+{% elif nuevo == False %}
 
   {% if results %}
     </br>
