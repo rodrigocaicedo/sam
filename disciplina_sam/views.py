@@ -75,8 +75,17 @@ def busqueda_disciplina(request):
         q_profesor = request.GET["q_profesor"]
         q_fecha = request.GET["q"]
         q_categoria = request.GET["q_categoria"]
-        reportes = Falta.objects.filter(matricula__estudiante__usuario__name=q_estudiante).filter(carga_horario__profesor__usuario__name = q_profesor)
-        return render_to_response('disciplina_sam/reportes',{"nuevo":False, "results":reportes, "debug":q_estudiante},context)
+        if "q_estado" in request.GET:
+            q_estado = request.GET["q_estado"]
+            if q_estado == "Activo":
+                reportes = Falta.objects.filter(activo = True, matricula__estudiante__usuario__name__icontains = q_estudiante, carga_horario__profesor__usuario__name__icontains = q_profesor).order_by("fecha")
+                return render_to_response('disciplina_sam/reportes',{"nuevo":False, "results":reportes, "debug":q_estudiante},context)
+            elif q_estado == "No activo":
+                reportes = Falta.objects.filter(activo = False, matricula__estudiante__usuario__name__icontains = q_estudiante, carga_horario__profesor__usuario__name__icontains = q_profesor).order_by("fecha")
+                return render_to_response('disciplina_sam/reportes',{"nuevo":False, "results":reportes, "debug":q_estudiante},context)
+        else:
+            reportes = Falta.objects.filter(matricula__estudiante__usuario__name__icontains = q_estudiante, carga_horario__profesor__usuario__name__icontains = q_profesor).order_by("fecha")
+            return render_to_response('disciplina_sam/reportes',{"nuevo":False, "results":reportes, "debug":q_estudiante},context)
 
 
     return render_to_response('disciplina_sam/reportes',{},context)
