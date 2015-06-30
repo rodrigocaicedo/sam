@@ -184,11 +184,15 @@ def crear_detalle(request, falta_id):
             new_form.falta_id = falta_id
             new_form.save()
             detalle_falta = Seguimiento_De_Falta.objects.filter(falta = falta_id)
-            return render_to_response('disciplina_sam/crear_detalle',{'form':blank_form,'falta_id':falta_id,'falta':falta},context)
+            return render_to_response('disciplina_sam/crear_detalle',{'form':blank_form,'falta_id':falta_id,'falta':falta, "detalle_falta":detalle_falta},context)
         else:
             print form.errors
-            return render_to_response('disciplina_sam/crear_detalle',{'form':form,'falta_id':falta_id,'falta':falta},context)
+            detalle_falta = Seguimiento_De_Falta.objects.filter(falta = falta_id)
+            return render_to_response('disciplina_sam/crear_detalle',{'form':form,'falta_id':falta_id,'falta':falta, "detalle_falta":detalle_falta},context)
     else:
         form=AccionForma()
-        return render_to_response('disciplina_sam/crear_detalle',{'form':form,'falta_id':falta_id,'falta':falta}, context)
+        detalle_falta = Seguimiento_De_Falta.objects.filter(falta = falta_id)
+        return render_to_response('disciplina_sam/crear_detalle',{'form':form,'falta_id':falta_id,'falta':falta, "detalle_falta":detalle_falta}, context)
+
+
 # Create your views here.
