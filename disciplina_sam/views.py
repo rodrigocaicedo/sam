@@ -125,19 +125,23 @@ def crear(request):
                 email_title_profesor = render_to_string('disciplina_sam/email_title_profesor.txt', {'categoria': id_categoria.nombre, "estudiante":nombre_estudiante})
                 email_body_profesor = render_to_string('disciplina_sam/email_profesor.txt', {'profesor':nombre_profesor, "fecha":falta.fecha, "categoria": falta.categoria.nombre, "estudiante":nombre_estudiante, "detalle":falta.detalle})
                 email_body_profesor_html = render_to_string('disciplina_sam/email_profesor.html', {'profesor':nombre_profesor, "fecha":falta.fecha, "categoria": falta.categoria.nombre, "estudiante":nombre_estudiante, "detalle":falta.detalle})
-                send_mail(email_title_profesor, email_body_profesor, 'from@example.com', [id_profesor.profesor.usuario.email], html_message = email_body_profesor_html, fail_silently=False)
+                send_mail(email_title_profesor, email_body_profesor, 'from@example.com', [id_profesor.profesor.usuario.email], html_message = email_body_profesor_html, fail_silently=True)
 
                 email_title_representante = render_to_string('disciplina_sam/email_title_representante.txt', {'categoria': id_categoria.nombre, "estudiante":nombre_estudiante, "profesor":nombre_profesor})
                 email_body_representante = render_to_string('disciplina_sam/email_representante.txt', {"representante":falta.matricula.estudiante.representante.usuario.name , 'profesor':nombre_profesor, "fecha":falta.fecha, "categoria": falta.categoria.nombre, "estudiante":nombre_estudiante, "detalle":falta.detalle})
                 email_body_representante_html = render_to_string('disciplina_sam/email_representante.html', {"representante":falta.matricula.estudiante.representante.usuario.name, 'profesor':nombre_profesor, "fecha":falta.fecha, "categoria": falta.categoria.nombre, "estudiante":nombre_estudiante, "detalle":falta.detalle})
-                send_mail(email_title_representante, email_body_representante, 'from@example.com', [id_estudiante.estudiante.representante.usuario.email], html_message = email_body_representante_html, fail_silently=False)
-
+                try:
+                    send_mail(email_title_representante, email_body_representante, 'from@example.com', [id_estudiante.estudiante.representante.usuario.email], html_message = email_body_representante_html, fail_silently=True)
+                except:
+                    pass
             if id_categoria.notificar_representante:
                 email_title_representante = render_to_string('disciplina_sam/email_title_representante.txt', {'categoria': id_categoria.nombre, "estudiante":nombre_estudiante, "profesor":nombre_profesor})
                 email_body_representante = render_to_string('disciplina_sam/email_representante_2.txt', {"representante":falta.matricula.estudiante.representante.usuario.name , 'profesor':nombre_profesor, "fecha":falta.fecha, "categoria": falta.categoria.nombre, "estudiante":nombre_estudiante, "detalle":falta.detalle})
                 email_body_representante_html = render_to_string('disciplina_sam/email_representante_2.html', {"representante":falta.matricula.estudiante.representante.usuario.name, 'profesor':nombre_profesor, "fecha":falta.fecha, "categoria": falta.categoria.nombre, "estudiante":nombre_estudiante, "detalle":falta.detalle})
-                send_mail(email_title_representante, email_body_representante, 'from@example.com', [id_estudiante.estudiante.representante.usuario.email], html_message = email_body_representante_html, fail_silently=False)
-
+                try:
+                    send_mail(email_title_representante, email_body_representante, 'from@example.com', [id_estudiante.estudiante.representante.usuario.email], html_message = email_body_representante_html, fail_silently=True)
+                except:
+                    pass
             return redirect(disciplina)
         else:
             print form.errors
@@ -161,29 +165,30 @@ def cambiar_estado_disciplina(request, registro_id):
 def reportes(request):
     context = RequestContext(request)
     text = "Hello world"
-    return render(request,'configuracion_sam/reportes',{'text':text})    
+    return render(request,'disciplina_sam/reportes',{'text':text})
 
 def detalle_falta(request, falta_id):
     context = RequestContext(request)
     falta = Falta.objects.get(pk = falta_id)
-#    detalle_falta = Seguimiento_De_Falta.objects.get(falta = falta_id)
     detalle_falta = Seguimiento_De_Falta.objects.filter(falta = falta_id)
-    return render_to_response('configuracion_sam/detalle',{'falta':falta, 'detalle_falta':detalle_falta},context)
+    return render_to_response('disciplina_sam/detalle',{'falta':falta, 'detalle_falta':detalle_falta},context)
 
 def crear_detalle(request, falta_id):
     falta = Falta.objects.get(pk = falta_id)
     context = RequestContext(request)
     if request.method=='POST':
+        blank_form = AccionForma()
         form = AccionForma(request.POST)
         if form.is_valid():
-            accion =  Falta.objects.get(pk = falta_id)
-            form = AccionForma(request.POST,instance=accion)
-            form.save()
-            return render_to_response('configuracion_sam/crear_detalle',{'form':form,'falta_id':falta_id,'falta':falta},context)
+            new_form = form.save(commit = False)
+            new_form.falta_id = falta_id
+            new_form.save()
+            detalle_falta = Seguimiento_De_Falta.objects.filter(falta = falta_id)
+            return render_to_response('disciplina_sam/crear_detalle',{'form':blank_form,'falta_id':falta_id,'falta':falta},context)
         else:
             print form.errors
-            return render_to_response('configuracion_sam/crear_detalle',{'form':form,'falta_id':falta_id,'falta':falta},context)
+            return render_to_response('disciplina_sam/crear_detalle',{'form':form,'falta_id':falta_id,'falta':falta},context)
     else:
         form=AccionForma()
-        return render_to_response('configuracion_sam/crear_detalle',{'form':form,'falta_id':falta_id,'falta':falta}, context)
+        return render_to_response('disciplina_sam/crear_detalle',{'form':form,'falta_id':falta_id,'falta':falta}, context)
 # Create your views here.

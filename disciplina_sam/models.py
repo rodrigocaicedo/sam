@@ -57,7 +57,7 @@ class Seguimiento_De_Falta(models.Model):
     accion = models.TextField()
 
     def __unicode__(self):
-        return self.falta.categoria+" "+self.falta.matricula.estudiante.name
+        return self.falta.categoria.nombre+" "+self.falta.matricula.estudiante.usuario.name
 
 
     
