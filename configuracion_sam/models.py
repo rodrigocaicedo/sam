@@ -106,6 +106,19 @@ class Subperiodo(models.Model):
     def __unicode__(self):
         return self.periodo_lectivo.name+" "+self.name
 
+class Estructura_Subperiodo(models.Model):
+    subperiodo = models.ForeignKey("Subperiodo")
+    name = models.TextField(max_length = 30)
+    affecting_fraction = models.FloatField()
+    inicio = models.DateField()
+    fin = models.DateField()
+
+    class Meta:
+        unique_together = ("subperiodo","name")
+
+    def __unicode__(self):
+        return self.subperiodo.periodo_lectivo.name + " " + self.subperiodo.name + " " + self.name
+
 
 class Clase(models.Model):
     clase_name = models.CharField(max_length=20)

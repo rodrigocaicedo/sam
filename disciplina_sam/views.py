@@ -15,7 +15,7 @@ def ac_estudiante(request):
     schoolyear = request.session['schoolyear']
     if request.is_ajax():
         q = request.GET.get('term', '')
-        drugs = Matricula.objects.filter(estudiante__usuario__name__icontains = q , estudiante__usuario__is_active = True)[:20]
+        drugs = Matricula.objects.filter(estudiante__usuario__name__icontains = q , estudiante__usuario__is_active = True, clase__periodo_lectivo__name__icontains = schoolyear)[:20]
         results = []
         for drug in drugs:
             drug_json = {}
@@ -28,9 +28,10 @@ def ac_estudiante(request):
     return HttpResponse(data, mimetype)
 
 def ac_profesor(request):
+    schoolyear = request.session['schoolyear']
     if request.is_ajax():
         q = request.GET.get('term', '')
-        drugs = Carga_Horario.objects.filter(profesor__usuario__name__icontains = q , activo = True)[:20]
+        drugs = Carga_Horario.objects.filter(profesor__usuario__name__icontains = q , activo = True, materia__clase__periodo_lectivo__name__icontains = schoolyear)[:20]
         results = []
         for drug in drugs:
             drug_json = {}
@@ -43,9 +44,10 @@ def ac_profesor(request):
     return HttpResponse(data, mimetype)
 
 def ac_categoria(request):
+    schoolyear = request.session['schoolyear']
     if request.is_ajax():
         q = request.GET.get('term', '')
-        drugs = Categoria.objects.filter(nombre__icontains = q )[:20]
+        drugs = Categoria.objects.filter(nombre__icontains = q, periodo_lectivo__name__icontains = schoolyear)[:20]
         results = []
         for drug in drugs:
             drug_json = {}
@@ -64,7 +66,8 @@ def index(request):
     return render(request,'disciplina_sam/index',context)
 
 def disciplina(request):
-    ultimos_registros = Falta.objects.filter(activo = True).order_by('-fecha')
+    schoolyear = request.session["schoolyear"]
+    ultimos_registros = Falta.objects.filter(activo = True, matricula__clase__periodo_lectivo__name__icontains = schoolyear).order_by('-fecha')
     context = {'ultimos_registros':ultimos_registros}
     return render(request,'disciplina_sam/disciplina',context)
 
@@ -105,15 +108,16 @@ def busqueda_disciplina(request):
 
 
 def crear(request):
+    schoolyear = request.session['schoolyear']
     context = RequestContext(request)
     if request.method == 'POST':
         data = request.POST.copy()
         nombre_estudiante = data["matricula"]
         nombre_profesor = data["carga_horario"]
         nombre_categoria = data["categoria"]
-        id_estudiante = Matricula.objects.get(estudiante__usuario__name__icontains = nombre_estudiante)
-        id_profesor = Carga_Horario.objects.get(profesor__usuario__name__icontains = nombre_profesor)
-        id_categoria = Categoria.objects.get(pk = nombre_categoria)
+        id_estudiante = Matricula.objects.get(estudiante__usuario__name__icontains = nombre_estudiante, clase__periodo_lectivo__name = schoolyear)
+        id_profesor = Carga_Horario.objects.get(profesor__usuario__name__icontains = nombre_profesor, materia__clase__periodo_lectivo__name = schoolyear)
+        id_categoria = Categoria.objects.get(pk = nombre_categoria, periodo_lectivo__name = schoolyear)
         data["matricula"] = id_estudiante.id
         data["carga_horario"] = id_profesor.id
 
@@ -130,6 +134,7 @@ def crear(request):
                 email_title_representante = render_to_string('disciplina_sam/email_title_representante.txt', {'categoria': id_categoria.nombre, "estudiante":nombre_estudiante, "profesor":nombre_profesor})
                 email_body_representante = render_to_string('disciplina_sam/email_representante.txt', {"representante":falta.matricula.estudiante.representante.usuario.name , 'profesor':nombre_profesor, "fecha":falta.fecha, "categoria": falta.categoria.nombre, "estudiante":nombre_estudiante, "detalle":falta.detalle})
                 email_body_representante_html = render_to_string('disciplina_sam/email_representante.html', {"representante":falta.matricula.estudiante.representante.usuario.name, 'profesor':nombre_profesor, "fecha":falta.fecha, "categoria": falta.categoria.nombre, "estudiante":nombre_estudiante, "detalle":falta.detalle})
+
                 try:
                     send_mail(email_title_representante, email_body_representante, 'from@example.com', [id_estudiante.estudiante.representante.usuario.email], html_message = email_body_representante_html, fail_silently=True)
                 except:
@@ -138,6 +143,7 @@ def crear(request):
                 email_title_representante = render_to_string('disciplina_sam/email_title_representante.txt', {'categoria': id_categoria.nombre, "estudiante":nombre_estudiante, "profesor":nombre_profesor})
                 email_body_representante = render_to_string('disciplina_sam/email_representante_2.txt', {"representante":falta.matricula.estudiante.representante.usuario.name , 'profesor':nombre_profesor, "fecha":falta.fecha, "categoria": falta.categoria.nombre, "estudiante":nombre_estudiante, "detalle":falta.detalle})
                 email_body_representante_html = render_to_string('disciplina_sam/email_representante_2.html', {"representante":falta.matricula.estudiante.representante.usuario.name, 'profesor':nombre_profesor, "fecha":falta.fecha, "categoria": falta.categoria.nombre, "estudiante":nombre_estudiante, "detalle":falta.detalle})
+
                 try:
                     send_mail(email_title_representante, email_body_representante, 'from@example.com', [id_estudiante.estudiante.representante.usuario.email], html_message = email_body_representante_html, fail_silently=True)
                 except:
@@ -148,6 +154,7 @@ def crear(request):
             return render_to_response('disciplina_sam/registro',{'form':form},context)
     else:
         form=FaltaForma()
+        form.fields["categoria"].queryset = Categoria.objects.filter(periodo_lectivo__name__icontains = schoolyear)
         return render_to_response('disciplina_sam/registro',{'form':form},context)
 
 def cambiar_estado_disciplina(request, registro_id):

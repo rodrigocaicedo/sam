@@ -49,6 +49,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'configuracion_sam',
     'disciplina_sam',
+    "academic_office_sam",
 )
 
 EMAIL_HOST = '10.63.0.1'

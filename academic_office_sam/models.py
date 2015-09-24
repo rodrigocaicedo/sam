@@ -1,18 +1,26 @@
 from django.db import models
 
-from configuracion_sam.models import Subperiodo
-
-Materia
-
-class Grade_Type(models):
+class Grade_Type(models.Model):
     name = models.TextField(max_length = 30)
 
-class Grade(models):
+    def __unicode__(self):
+        return self.name
 
-    subperiodo = models.ForeignKey("Subperiodo")
-    materia = models.ForeignKey("Materia")
+class Grade(models.Model):
+
+    parcial = models.ForeignKey("configuracion_sam.Estructura_Subperiodo")
+    materia = models.ForeignKey("configuracion_sam.Materia")
     type = models.ForeignKey("Grade_Type")
+
+    def __unicode__(self):
+        return self.parcial.name + " " + self.materia.nombre + " " + self.materia.clase.clase_name
+
+
+class Student_Grade(models.Model):
+    assignment = models.ForeignKey("Grade")
+    student = models.ForeignKey("configuracion_sam.Matricula")
     grade = models.FloatField()
 
-
+    def __unicode__(self):
+        return self.assignment.materia.nombre+" "+self.student.estudiante.usuario.name
 # Create your models here.

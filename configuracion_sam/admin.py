@@ -42,4 +42,5 @@ admin.site.register(Matricula)
 admin.site.register(Materia)
 admin.site.register(Carga_Horario)
 admin.site.register(Representante)
+admin.site.register(Estructura_Subperiodo)
 # Register your models here.

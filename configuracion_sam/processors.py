@@ -14,5 +14,5 @@ def schoolyear_list(request):
 		else:
 			request.session['schoolyear'] = "Seleccione..."
 
-	return {'schoolyears':Periodo_Lectivo.objects.all()}
+	return {'schoolyears':Periodo_Lectivo.objects.all().order_by("-name")}
 
