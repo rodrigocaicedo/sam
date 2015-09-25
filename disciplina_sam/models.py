@@ -11,28 +11,13 @@ class Patrones_Categoria(models.Model):
     def __unicode__(self):
         return "%d eventos - %d dias" %(self.cantidad, self.periodo)
 
-class Patron(models.Model):
-    fecha = models.DateField()
-    categoria = models.ForeignKey("Categoria")
-    cantidad = models.IntegerField()
-
-    def __unicode__(self):
-        return "%s, %s" % (self.fecha, self.categoria)
-
-class Seguimiento_De_Patron(models.Model):
-    patron = models.ForeignKey("Patron")
-    fecha = models.DateField()
-    accion = models.TextField()
-
-    def __unicode__(self):
-        return "%s, %s" % (self.fecha, self.patron)
-
 class Categoria(models.Model):
     nombre = models.CharField(max_length=40)
     valor = models.IntegerField()
     notificar_profesor = models.BooleanField(default = False)
     notificar_representante = models.BooleanField(default = False)
-    categoria_patron = models.ForeignKey("Patrones_categoria", null=True, blank=True, default = None)
+    periodo_patron = models.IntegerField()
+    eventos_patron = models.IntegerField()
     periodo_lectivo = models.ForeignKey('configuracion_sam.Periodo_Lectivo', related_name='config_periodo_lectivo')
 
     class Meta:

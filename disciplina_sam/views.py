@@ -4,10 +4,12 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 
-from configuracion_sam.models import Matricula, Carga_Horario, Clase
+from datetime import date, timedelta
+
+from configuracion_sam.models import Matricula, Carga_Horario, Clase, Periodo_Lectivo
 
 from disciplina_sam.models import Falta, Seguimiento_De_Falta, Categoria
-from disciplina_sam.forms import FaltaForma, AccionForma
+from disciplina_sam.forms import FaltaForma, AccionForma, CategoriaForm
 
 import json
 
@@ -72,6 +74,7 @@ def disciplina(request):
     return render(request,'disciplina_sam/disciplina',context)
 
 def busqueda_disciplina(request):
+    schoolyear = request.session["schoolyear"]
     context = RequestContext(request)
     if "q" in request.GET:
         q_estudiante = request.GET["q_estudiante"]
@@ -82,25 +85,25 @@ def busqueda_disciplina(request):
             if "q_estado" in request.GET:
                 q_estado = request.GET["q_estado"]
                 if q_estado == "Activo":
-                    reportes = Falta.objects.filter(fecha = q_fecha, activo = True, matricula__estudiante__usuario__name__icontains = q_estudiante, carga_horario__profesor__usuario__name__icontains = q_profesor).order_by("-fecha")
+                    reportes = Falta.objects.filter(matricula__clase__periodo_lectivo__name = schoolyear, fecha = q_fecha, activo = True, matricula__estudiante__usuario__name__icontains = q_estudiante, carga_horario__profesor__usuario__name__icontains = q_profesor).order_by("-fecha")
                     return render_to_response('disciplina_sam/reportes',{"nuevo":False, "results":reportes, "debug":q_estudiante},context)
                 elif q_estado == "No activo":
-                    reportes = Falta.objects.filter(fecha = q_fecha, activo = False, matricula__estudiante__usuario__name__icontains = q_estudiante, carga_horario__profesor__usuario__name__icontains = q_profesor).order_by("-fecha")
+                    reportes = Falta.objects.filter(matricula__clase__periodo_lectivo__name = schoolyear, fecha = q_fecha, activo = False, matricula__estudiante__usuario__name__icontains = q_estudiante, carga_horario__profesor__usuario__name__icontains = q_profesor).order_by("-fecha")
                     return render_to_response('disciplina_sam/reportes',{"nuevo":False, "results":reportes, "debug":q_estudiante},context)
             else:
-                reportes = Falta.objects.filter(fecha = q_fecha, matricula__estudiante__usuario__name__icontains = q_estudiante, carga_horario__profesor__usuario__name__icontains = q_profesor).order_by("-fecha")
+                reportes = Falta.objects.filter(matricula__clase__periodo_lectivo__name = schoolyear, fecha = q_fecha, matricula__estudiante__usuario__name__icontains = q_estudiante, carga_horario__profesor__usuario__name__icontains = q_profesor).order_by("-fecha")
                 return render_to_response('disciplina_sam/reportes',{"nuevo":False, "results":reportes, "debug":q_estudiante},context)
         else:
             if "q_estado" in request.GET:
                 q_estado = request.GET["q_estado"]
                 if q_estado == "Activo":
-                    reportes = Falta.objects.filter(activo = True, matricula__estudiante__usuario__name__icontains = q_estudiante, carga_horario__profesor__usuario__name__icontains = q_profesor).order_by("-fecha")
+                    reportes = Falta.objects.filter(matricula__clase__periodo_lectivo__name = schoolyear, activo = True, matricula__estudiante__usuario__name__icontains = q_estudiante, carga_horario__profesor__usuario__name__icontains = q_profesor).order_by("-fecha")
                     return render_to_response('disciplina_sam/reportes',{"nuevo":False, "results":reportes, "debug":q_estudiante},context)
                 elif q_estado == "No activo":
-                    reportes = Falta.objects.filter(activo = False, matricula__estudiante__usuario__name__icontains = q_estudiante, carga_horario__profesor__usuario__name__icontains = q_profesor).order_by("-fecha")
+                    reportes = Falta.objects.filter(matricula__clase__periodo_lectivo__name = schoolyear, activo = False, matricula__estudiante__usuario__name__icontains = q_estudiante, carga_horario__profesor__usuario__name__icontains = q_profesor).order_by("-fecha")
                     return render_to_response('disciplina_sam/reportes',{"nuevo":False, "results":reportes, "debug":q_estudiante},context)
             else:
-                reportes = Falta.objects.filter(matricula__estudiante__usuario__name__icontains = q_estudiante, carga_horario__profesor__usuario__name__icontains = q_profesor).order_by("-fecha")
+                reportes = Falta.objects.filter(matricula__clase__periodo_lectivo__name = schoolyear, matricula__estudiante__usuario__name__icontains = q_estudiante, carga_horario__profesor__usuario__name__icontains = q_profesor).order_by("-fecha")
                 return render_to_response('disciplina_sam/reportes',{"nuevo":False, "results":reportes, "debug":q_estudiante},context)
 
     return render_to_response('disciplina_sam/reportes',{},context)
@@ -148,6 +151,21 @@ def crear(request):
                     send_mail(email_title_representante, email_body_representante, 'from@example.com', [id_estudiante.estudiante.representante.usuario.email], html_message = email_body_representante_html, fail_silently=True)
                 except:
                     pass
+            periodo_patron = falta.categoria.periodo_patron
+            eventos_patron = falta.categoria.eventos_patron
+            end_date = date.today()
+            start_date = end_date - timedelta(days = periodo_patron)
+
+            if Falta.objects.filter(matricula = falta.matricula, categoria = falta.categoria, fecha__range=[start_date, end_date]).count() >= eventos_patron:
+                email_title_dcce = render_to_string('disciplina_sam/email_title_dcce.txt', {'categoria': id_categoria.nombre, "estudiante":nombre_estudiante, "profesor":nombre_profesor})
+                email_body_dcce = render_to_string('disciplina_sam/email_dcce.txt', {"periodo": periodo_patron, "eventos":Falta.objects.filter(matricula = falta.matricula, categoria = falta.categoria, fecha__range=[start_date, end_date]).count(), "representante":falta.matricula.estudiante.representante.usuario.name , 'profesor':nombre_profesor, "fecha":falta.fecha, "categoria": falta.categoria.nombre, "estudiante":nombre_estudiante, "detalle":falta.detalle})
+                email_body_dcce_html = render_to_string('disciplina_sam/email_dcce.html', {"representante":falta.matricula.estudiante.representante.usuario.name, 'profesor':nombre_profesor, "fecha":falta.fecha, "categoria": falta.categoria.nombre, "estudiante":nombre_estudiante, "detalle":falta.detalle})
+                try:
+                    send_mail(email_title_dcce, email_body_dcce, 'from@example.com', ["rodrigo@montebelloacademy.org"], html_message = email_body_dcce_html, fail_silently=True)
+                except:
+                    pass
+            else:
+                pass
             return redirect(disciplina)
         else:
             print form.errors
@@ -200,6 +218,32 @@ def crear_detalle(request, falta_id):
         form=AccionForma()
         detalle_falta = Seguimiento_De_Falta.objects.filter(falta = falta_id)
         return render_to_response('disciplina_sam/crear_detalle',{'form':form,'falta_id':falta_id,'falta':falta, "detalle_falta":detalle_falta}, context)
+
+def categorias(request):
+    context = RequestContext(request)
+    schoolyear = request.session["schoolyear"]
+    categorias = Categoria.objects.filter(periodo_lectivo__name = schoolyear)
+
+    if request.method == "POST":
+        data = request.POST.copy()
+        periodo_lectivo_actual = Periodo_Lectivo.objects.get(name = schoolyear)
+        #data["periodo_lectivo"] = periodo_lectivo_actual.id
+        #form = CategoriaForm(data)
+        form = CategoriaForm(request.POST)
+        if form.is_valid():
+            nueva_categoria = form.save(commit = False)
+            nueva_categoria.periodo_lectivo = periodo_lectivo_actual
+            nueva_categoria.save()
+            form = CategoriaForm()
+
+            return render_to_response("disciplina_sam/categoria",{"categorias":categorias, "form":form},context)
+        else:
+            print form.errors
+            return render_to_response("disciplina_sam/categoria",{"categorias":categorias, "form":form},context)
+    else:
+        form = CategoriaForm()
+        return render_to_response("disciplina_sam/categoria",{"categorias":categorias, "form":form},context)
+
 
 
 # Create your views here.

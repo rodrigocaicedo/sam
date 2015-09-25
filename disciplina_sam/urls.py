@@ -16,6 +16,6 @@ urlpatterns = patterns('',
     #url(r'^reportes/$',views.reportes, name='reportes'),
     url(r'^disciplina/detalle/(?P<falta_id>\d+)/$', views.detalle_falta, name='detalle_falta'),
     url(r'^disciplina/detalle/crear/(?P<falta_id>\d+)/$', views.crear_detalle, name='crear_detalle'),
-    #url(r'^configuracion/$',views.categorias, name='categorias'),
+    url(r'^configuracion/$',views.categorias, name='categorias'),
 )
 urlpatterns += staticfiles_urlpatterns()

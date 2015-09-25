@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% load extras %}
+{% block title %}
+Nuevo registro de nota
+{% endblock %}
+{% block content %}
+                <div class="row">
+                    <div class="col-lg-12">
+                        <ol class="breadcrumb">
+                            <li>
+                                <i class="fa fa-home"></i><a href="/faltas/"> Inicio</a>
+                            </li>
+                            <li>
+                                <i class="fa fa-meh-o"></i><a href="/faltas/disciplina"> Disciplina</a>
+                            </li>
+                            <li>
+                                <i class="fa fa-search"></i><a href="/faltas/disciplina/busqueda/"> Buscar registro</a>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+    {%if students%}
+    <form name="estudiantes_grados" action="" method="post">
+            {% csrf_token %}
+            {{ formset.management_form}}
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+
+                    <tbody>
+                           {% for form in formset %}
+                           <tr>
+                                {% for field in form %}
+                                <td>{{field}}</td>
+                                {% endfor%}
+                           </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <button id="save" type="submit">Save</button>
+
+    {%else%}
+    No existen estudiantes en esta clase {{clase.nombre}}
+    {%endif%}
+{%  endblock %}
+
+{% block scripts %}
+<script>$( ".datepicker" ).datepicker();</script>
+
+<script>
+$(function() {
+  $(".matricula").autocomplete({
+    source: "/faltas/ac_estudiante/",
+    minLength: 2,
+  });
+});
+</script>
+
+<script>
+$(function() {
+  $(".carga_horario").autocomplete({
+    source: "/faltas/ac_profesor/",
+    minLength: 2,
+  });
+});
+</script>
+<script>
+$(function() {
+  $(".categoria").autocomplete({
+    source: "/faltas/ac_categoria/",
+    minLength: 2,
+  });
+});
+</script>
+
+{% endblock %}

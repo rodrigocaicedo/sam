@@ -20,7 +20,7 @@ class AccionForma(forms.ModelForm):
 class CategoriaForm(forms.ModelForm):
     class Meta:
         model = Categoria
-#    fields = ['nombre','valor']
-        exclude = ['periodo_lectivo']
+#        fields = ['nombre','valor', "notificar_profesor", "notificar_representante", "categoria_patron"]
+        exclude = ["periodo_lectivo"]
 
 #    fields = ['nombre','valor','periodo_lectivo']

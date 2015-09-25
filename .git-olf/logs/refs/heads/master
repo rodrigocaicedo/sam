@@ -1,0 +1,17 @@
+0000000000000000000000000000000000000000 58d214edeb1a4edc2d25099f19dcf47a7f6a432e Rodrigo Caicedo <rodrigo@montebelloacademy.org> 1433954391 -0500	commit (initial): success
+58d214edeb1a4edc2d25099f19dcf47a7f6a432e b70355428248145224e7f2b9c69e566c66a6ae7c Rodrigo Caicedo <rodrigo@montebelloacademy.org> 1433954719 -0500	commit: hola
+b70355428248145224e7f2b9c69e566c66a6ae7c 58d214edeb1a4edc2d25099f19dcf47a7f6a432e Rodrigo Caicedo <rodrigo@montebelloacademy.org> 1433955380 -0500	reset: moving to HEAD~1
+58d214edeb1a4edc2d25099f19dcf47a7f6a432e b70355428248145224e7f2b9c69e566c66a6ae7c Rodrigo Caicedo <rodrigo@montebelloacademy.org> 1433955446 -0500	pull origin master: Fast-forward
+b70355428248145224e7f2b9c69e566c66a6ae7c ba6b58c7b82076fc6392e0263273865c9b04d25f Rodrigo Caicedo <rodrigo@montebelloacademy.org> 1433955846 -0500	commit: mm
+ba6b58c7b82076fc6392e0263273865c9b04d25f 6cbdfed84b697d3cc663d5a5e6f4eeab9849eed2 Rodrigo Caicedo <rodrigo@montebelloacademy.org> 1433965318 -0500	commit: added crear functionality with mailing
+6cbdfed84b697d3cc663d5a5e6f4eeab9849eed2 a22e4802cbe61a2a0859a14f6f3b341042d75c85 Rodrigo Caicedo <rodrigo@montebelloacademy.org> 1435341676 -0500	commit: primer commit
+a22e4802cbe61a2a0859a14f6f3b341042d75c85 451babb4902e5ccbd320165f2816cee6e1c68448 Rodrigo Caicedo <rodrigo@montebelloacademy.org> 1435618078 -0500	commit: Funcion busqueda
+451babb4902e5ccbd320165f2816cee6e1c68448 859fa8ea4b582430bf6f6f850086ee08bfd25fdd Rodrigo Caicedo <rodrigo@montebelloacademy.org> 1435619346 -0500	commit: Fecha en buequeda
+859fa8ea4b582430bf6f6f850086ee08bfd25fdd 0cb6df5430bb13dabd9a8e29e6edeb63682c60cc Rodrigo Caicedo <rodrigo@montebelloacademy.org> 1435628560 -0500	commit: Creacion de detalle
+0cb6df5430bb13dabd9a8e29e6edeb63682c60cc 4d3c3ad0634eb9855776a696962a0db8294e8a17 Rodrigo Caicedo <rodrigo@montebelloacademy.org> 1435628835 -0500	commit: Creacion de detalle
+4d3c3ad0634eb9855776a696962a0db8294e8a17 7dc139901b56fd671028c7dbd4f823a31693391d Rodrigo Caicedo <rodrigo@montebelloacademy.org> 1435684945 -0500	commit: inicio de manejo de notas
+7dc139901b56fd671028c7dbd4f823a31693391d 86aab407d7e41db7f86b59a608a903e313437ed1 Rodrigo Caicedo <rodrigo@montebelloacademy.org> 1435684975 -0500	commit: inicio de notas
+86aab407d7e41db7f86b59a608a903e313437ed1 9ba1feba8b864d21312f65e1da3f29baa125a6b3 Rodrigo Caicedo <rodrigo@montebelloacademy.org> 1435685235 -0500	commit: notas 2
+9ba1feba8b864d21312f65e1da3f29baa125a6b3 be43ccb5b9c92e3b40a0629065ed2a4418b986c2 Rodrigo Caicedo <rodrigo@montebelloacademy.org> 1435685512 -0500	commit: notas 3
+be43ccb5b9c92e3b40a0629065ed2a4418b986c2 c82e10e8329b802eef6b925cd1b9c49ec5e0e188 Rodrigo Caicedo <rodrigo@montebelloacademy.org> 1435685539 -0500	commit: notas 4
+c82e10e8329b802eef6b925cd1b9c49ec5e0e188 70254a1963e6b7135cad0e6742caf8361f4eff75 Rodrigo Caicedo <rodrigo@montebelloacademy.org> 1435703260 -0500	commit: notas x
