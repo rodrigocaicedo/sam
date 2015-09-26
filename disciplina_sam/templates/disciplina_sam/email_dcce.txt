@@ -5,7 +5,7 @@ Se ha identificado un patrón de incidentes disciplinarios:
 Estudiante: {{estudiante}}
 Categoría : {{categoria}}
 Cantidad de incidentes: {{eventos}}
-Período: {{periodo}} días
+Parcial: {{parcial}} - {{subperiodo}}
 
 Por favor, dar seguimiento a esto.
 

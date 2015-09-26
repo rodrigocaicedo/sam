@@ -1,6 +1,7 @@
 from django.db import models
 from configuracion_sam.models import Periodo_Lectivo, Subperiodo, Clase, Estudiante, Profesor, Matricula, Carga_Horario
 
+
 class Patrones_Categoria(models.Model):
     cantidad = models.IntegerField()
     periodo = models.IntegerField()
@@ -13,11 +14,13 @@ class Patrones_Categoria(models.Model):
 
 class Categoria(models.Model):
     nombre = models.CharField(max_length=40)
-    valor = models.IntegerField()
     notificar_profesor = models.BooleanField(default = False)
     notificar_representante = models.BooleanField(default = False)
-    periodo_patron = models.IntegerField()
-    eventos_patron = models.IntegerField()
+    patrones_en_parcial = models.BooleanField(default = False)
+    eventos_parcial = models.IntegerField(blank = True, null = True , error_messages={'required': 'Ingrese un numero mayor a 0'})
+    patrones_en_periodo = models.BooleanField(default = False)
+    periodo_patron = models.IntegerField(blank = True, null = True, error_messages={'required': 'Ingrese un numero mayor a 0'})
+    eventos_patron = models.IntegerField(blank = True, null= True, error_messages={'required': 'Ingrese un numero mayor a 0'})
     periodo_lectivo = models.ForeignKey('configuracion_sam.Periodo_Lectivo', related_name='config_periodo_lectivo')
 
     class Meta:
