@@ -1,0 +1,15 @@
+﻿Estimado Juan Pablo:
+
+Se ha identificado un patrón de incidentes disciplinarios:
+
+Estudiante: {{estudiante}}
+Categoría : {{categoria}}
+Cantidad de incidentes: {{eventos}}
+Período: {{periodo}} días
+
+Por favor, dar seguimiento a esto.
+
+Muchas gracias,
+
+
+DCCE - Montebello
