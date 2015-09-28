@@ -1,1 +1,1 @@
-Patrón disciplinario identificado: {{categoria}} - {{estudiante}}
+Patrón disciplinario identificado: {{estudiante}} - {{categoria}}

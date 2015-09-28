@@ -155,13 +155,14 @@ def crear(request):
             eventos_patron = falta.categoria.eventos_patron
             end_date = date.today()
             start_date = end_date - timedelta(days = periodo_patron)
+            eventos_cantidad = Falta.objects.filter(matricula = falta.matricula, categoria = falta.categoria, fecha__range=[start_date, end_date])
 
             if Falta.objects.filter(matricula = falta.matricula, categoria = falta.categoria, fecha__range=[start_date, end_date]).count() >= eventos_patron:
                 email_title_dcce = render_to_string('disciplina_sam/email_title_dcce.txt', {'categoria': id_categoria.nombre, "estudiante":nombre_estudiante, "profesor":nombre_profesor})
-                email_body_dcce = render_to_string('disciplina_sam/email_dcce.txt', {"periodo": periodo_patron, "eventos":Falta.objects.filter(matricula = falta.matricula, categoria = falta.categoria, fecha__range=[start_date, end_date]).count(), "representante":falta.matricula.estudiante.representante.usuario.name , 'profesor':nombre_profesor, "fecha":falta.fecha, "categoria": falta.categoria.nombre, "estudiante":nombre_estudiante, "detalle":falta.detalle})
-                email_body_dcce_html = render_to_string('disciplina_sam/email_dcce.html', {"representante":falta.matricula.estudiante.representante.usuario.name, 'profesor':nombre_profesor, "fecha":falta.fecha, "categoria": falta.categoria.nombre, "estudiante":nombre_estudiante, "detalle":falta.detalle})
+                email_body_dcce = render_to_string('disciplina_sam/email_dcce.txt', {"eventos": eventos_cantidad.count(), "periodo": periodo_patron, "representante":falta.matricula.estudiante.representante.usuario.name , 'profesor':nombre_profesor, "fecha":falta.fecha, "categoria": falta.categoria.nombre, "estudiante":nombre_estudiante, "detalle":falta.detalle})
+                email_body_dcce_html = render_to_string('disciplina_sam/email_dcce.html', {"eventos": eventos_cantidad.count(), "periodo": periodo_patron,  "representante":falta.matricula.estudiante.representante.usuario.name, 'profesor':nombre_profesor, "fecha":falta.fecha, "categoria": falta.categoria.nombre, "estudiante":nombre_estudiante, "detalle":falta.detalle})
                 try:
-                    send_mail(email_title_dcce, email_body_dcce, 'from@example.com', ["rodrigo@montebelloacademy.org"], html_message = email_body_dcce_html, fail_silently=True)
+                    send_mail(email_title_dcce, email_body_dcce, 'from@example.com', ["rodrigo@montebelloacademy.org"], html_message = email_body_dcce_html, fail_silently=False)
                 except:
                     pass
             else:
