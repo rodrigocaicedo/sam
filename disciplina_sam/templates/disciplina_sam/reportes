@@ -114,7 +114,7 @@ $(function() {
 <script>
 $(function() {
   $("#id_q_profesor").autocomplete({
-    source: "/faltas/ac_profesor/",
+    source: "/faltas/ac_profesor_busqueda/",
     minLength: 2,
   });
 });

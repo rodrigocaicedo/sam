@@ -189,18 +189,15 @@
                     {% if reporte %}<li class="active">{% endif %}
                         <a href="/faltas/reportes"><i class="fa fa-fw fa-table"></i> Reportes</a>
                     </li>
-                    <li>    
-                    {% if configuracion %}<li class="active">{% endif %}
-                        <a href="/faltas/configuracion"><i class="fa fa-fw fa-wrench"></i> Configuración</a>
-                    </li>
                     <li>
-                        <a href="javascript:;" data-toggle="collapse" data-target="#demo"><i class="fa fa-fw fa-arrows-v"></i> Dropdown <i class="fa fa-fw fa-caret-down"></i></a>
+                        {% if configuracion %}<li class="active">{% endif %}
+                        <a href="javascript:;" data-toggle="collapse" data-target="#demo"><i class="fa fa-fw fa-wrench"></i> Configuración <i class="fa fa-fw fa-caret-down"></i></a>
                         <ul id="demo" class="collapse">
                             <li>
-                                <a href="#">Dropdown Item</a>
+                                <a href="/faltas/configuracion">Disciplina</a>
                             </li>
                             <li>
-                                <a href="#">Dropdown Item</a>
+                                <a href="#">Asistencia</a>
                             </li>
                         </ul>
                     </li>

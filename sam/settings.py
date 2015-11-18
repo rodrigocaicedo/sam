@@ -50,6 +50,8 @@ INSTALLED_APPS = (
     'configuracion_sam',
     'disciplina_sam',
     "academic_office_sam",
+    "requisicion_sam",
+    "import_export",
 )
 
 EMAIL_HOST = '10.63.0.1'

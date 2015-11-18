@@ -30,17 +30,54 @@ def ac_estudiante(request):
     mimetype = 'application/json'
     return HttpResponse(data, mimetype)
 
+def ac_profesor_busqueda(request):
+    schoolyear = request.session['schoolyear']
+    if request.is_ajax():
+        q = request.GET.get('term', '')
+        if Carga_Horario.objects.filter(profesor__usuario__name__icontains=q, activo=True,
+                                             materia__clase__periodo_lectivo__name__icontains=schoolyear)[:20].exists():
+            drugs = Carga_Horario.objects.filter(profesor__usuario__name__icontains=q, activo=True,
+                                             materia__clase__periodo_lectivo__name__icontains=schoolyear)[:20]
+        else:
+            drugs = Carga_Horario.objects.filter(materia__nombre__icontains=q, activo=True,
+                                             materia__clase__periodo_lectivo__name__icontains=schoolyear)[:20]
+        results = []
+
+        for drug in drugs:
+            drug_json = {}
+            #drug_json['value'] = drug.profesor.usuario.name
+            drug_json["value"] = drug.profesor.usuario.name
+            if drug_json in results:
+                pass
+            else:
+                results.append(drug_json)
+        data = json.dumps(results)
+    else:
+        data = 'fail'
+    mimetype = 'application/json'
+    return HttpResponse(data, mimetype)
+
 def ac_profesor(request):
     schoolyear = request.session['schoolyear']
     if request.is_ajax():
         q = request.GET.get('term', '')
-        drugs = Carga_Horario.objects.filter(profesor__usuario__name__icontains=q, activo=True,
+        if Carga_Horario.objects.filter(profesor__usuario__name__icontains=q, activo=True,
+                                             materia__clase__periodo_lectivo__name__icontains=schoolyear)[:20].exists():
+            drugs = Carga_Horario.objects.filter(profesor__usuario__name__icontains=q, activo=True,
+                                             materia__clase__periodo_lectivo__name__icontains=schoolyear)[:20]
+        else:
+            drugs = Carga_Horario.objects.filter(materia__nombre__icontains=q, activo=True,
                                              materia__clase__periodo_lectivo__name__icontains=schoolyear)[:20]
         results = []
+
         for drug in drugs:
             drug_json = {}
-            drug_json['value'] = drug.profesor.usuario.name
-            results.append(drug_json)
+            #drug_json['value'] = drug.profesor.usuario.name
+            drug_json["value"] = drug.materia.nombre + " -- " + drug.profesor.usuario.name
+            if drug_json in results:
+                pass
+            else:
+                results.append(drug_json)
         data = json.dumps(results)
     else:
         data = 'fail'
@@ -64,19 +101,23 @@ def ac_categoria(request):
     return HttpResponse(data, mimetype)
 
 def index(request):
+
+    index = "Index"
     clases = Clase.objects.all().order_by('nivel')
-    context = {'clases': clases}
+    context = {'clases': clases, "index":index}
     return render(request, 'disciplina_sam/index', context)
 
 def disciplina(request):
+    disciplina2 = "Disciplina"
     schoolyear = request.session["schoolyear"]
     ultimos_registros = Falta.objects.filter(activo=True,
                                              matricula__clase__periodo_lectivo__name__icontains=schoolyear).order_by(
         '-fecha')
-    context = {'ultimos_registros': ultimos_registros}
+    context = {'ultimos_registros': ultimos_registros, "disciplina":disciplina2}
     return render(request, 'disciplina_sam/disciplina', context)
 
 def busqueda_disciplina(request):
+    disciplina2="Disciplina"
     schoolyear = request.session["schoolyear"]
     context = RequestContext(request)
     if "q" in request.GET:
@@ -91,70 +132,97 @@ def busqueda_disciplina(request):
                     reportes = Falta.objects.filter(matricula__clase__periodo_lectivo__name=schoolyear, fecha=q_fecha,
                                                     activo=True,
                                                     matricula__estudiante__usuario__name__icontains=q_estudiante,
-                                                    carga_horario__profesor__usuario__name__icontains=q_profesor).order_by(
+                                                    carga_horario__profesor__usuario__name__icontains=q_profesor, categoria__nombre__icontains = q_categoria).order_by(
                         "-fecha")
                     return render_to_response('disciplina_sam/reportes',
-                                              {"nuevo": False, "results": reportes, "debug": q_estudiante}, context)
+                                              {"nuevo": False, "results": reportes, "debug": q_estudiante, "disciplina":disciplina2}, context)
                 elif q_estado == "No activo":
                     reportes = Falta.objects.filter(matricula__clase__periodo_lectivo__name=schoolyear, fecha=q_fecha,
                                                     activo=False,
                                                     matricula__estudiante__usuario__name__icontains=q_estudiante,
-                                                    carga_horario__profesor__usuario__name__icontains=q_profesor).order_by(
+                                                    carga_horario__profesor__usuario__name__icontains=q_profesor, categoria__nombre__icontains = q_categoria).order_by(
                         "-fecha")
                     return render_to_response('disciplina_sam/reportes',
-                                              {"nuevo": False, "results": reportes, "debug": q_estudiante}, context)
+                                              {"nuevo": False, "results": reportes, "debug": q_estudiante, "disciplina":disciplina2}, context)
             else:
                 reportes = Falta.objects.filter(matricula__clase__periodo_lectivo__name=schoolyear, fecha=q_fecha,
                                                 matricula__estudiante__usuario__name__icontains=q_estudiante,
-                                                carga_horario__profesor__usuario__name__icontains=q_profesor).order_by(
+                                                carga_horario__profesor__usuario__name__icontains=q_profesor, categoria__nombre__icontains = q_categoria).order_by(
                     "-fecha")
                 return render_to_response('disciplina_sam/reportes',
-                                          {"nuevo": False, "results": reportes, "debug": q_estudiante}, context)
+                                          {"nuevo": False, "results": reportes, "debug": q_estudiante, "disciplina":disciplina2}, context)
         else:
             if "q_estado" in request.GET:
                 q_estado = request.GET["q_estado"]
                 if q_estado == "Activo":
                     reportes = Falta.objects.filter(matricula__clase__periodo_lectivo__name=schoolyear, activo=True,
                                                     matricula__estudiante__usuario__name__icontains=q_estudiante,
-                                                    carga_horario__profesor__usuario__name__icontains=q_profesor).order_by(
+                                                    carga_horario__profesor__usuario__name__icontains=q_profesor, categoria__nombre__icontains = q_categoria).order_by(
                         "-fecha")
                     return render_to_response('disciplina_sam/reportes',
-                                              {"nuevo": False, "results": reportes, "debug": q_estudiante}, context)
+                                              {"nuevo": False, "results": reportes, "debug": q_estudiante, "disciplina":disciplina2}, context)
                 elif q_estado == "No activo":
                     reportes = Falta.objects.filter(matricula__clase__periodo_lectivo__name=schoolyear, activo=False,
                                                     matricula__estudiante__usuario__name__icontains=q_estudiante,
-                                                    carga_horario__profesor__usuario__name__icontains=q_profesor).order_by(
+                                                    carga_horario__profesor__usuario__name__icontains=q_profesor, categoria__nombre__icontains = q_categoria).order_by(
                         "-fecha")
                     return render_to_response('disciplina_sam/reportes',
-                                              {"nuevo": False, "results": reportes, "debug": q_estudiante}, context)
+                                              {"nuevo": False, "results": reportes, "debug": q_estudiante, "disciplina":disciplina2}, context)
             else:
                 reportes = Falta.objects.filter(matricula__clase__periodo_lectivo__name=schoolyear,
                                                 matricula__estudiante__usuario__name__icontains=q_estudiante,
-                                                carga_horario__profesor__usuario__name__icontains=q_profesor).order_by(
+                                                carga_horario__profesor__usuario__name__icontains=q_profesor, categoria__nombre__icontains = q_categoria).order_by(
                     "-fecha")
                 return render_to_response('disciplina_sam/reportes',
-                                          {"nuevo": False, "results": reportes, "debug": q_estudiante}, context)
+                                          {"nuevo": False, "results": reportes, "debug": q_estudiante, "disciplina":disciplina2}, context)
 
-    return render_to_response('disciplina_sam/reportes', {}, context)
-    pass
+    return render_to_response('disciplina_sam/reportes', {"disciplina":disciplina2}, context)
 
 def crear(request):
+    disciplina2="Disciplina"
     schoolyear = request.session['schoolyear']
     context = RequestContext(request)
+    form = FaltaForma()
+    form.fields["categoria"].queryset = Categoria.objects.filter(periodo_lectivo__name__icontains=schoolyear)
     if request.method == 'POST':
         data = request.POST.copy()
         nombre_estudiante = data["matricula"]
-        nombre_profesor = data["carga_horario"]
-        nombre_categoria = data["categoria"]
-        id_estudiante = Matricula.objects.get(estudiante__usuario__name__icontains=nombre_estudiante,
-                                              clase__periodo_lectivo__name=schoolyear)
-        id_profesor = Carga_Horario.objects.get(profesor__usuario__name__icontains=nombre_profesor,
-                                                materia__clase__periodo_lectivo__name=schoolyear)
-        id_categoria = Categoria.objects.get(pk=nombre_categoria, periodo_lectivo__name=schoolyear)
-        data["matricula"] = id_estudiante.id
-        data["carga_horario"] = id_profesor.id
+        nombre_profesor_sinformato = data["carga_horario"]
+        try:
+            nombre_materia, nombre_profesor = nombre_profesor_sinformato.split(" -- ")
+        except:
+            nombre_materia = nombre_profesor = nombre_profesor_sinformato
 
+        nombre_categoria = data["categoria"]
+        try:
+            id_estudiante = Matricula.objects.get(estudiante__usuario__name__icontains=nombre_estudiante,clase__periodo_lectivo__name=schoolyear)
+            data["matricula"] = id_estudiante.id
+            resultado_estudiante = nombre_estudiante
+        except:
+            id_estudiante = None
+            resultado_estudiante = None
+
+        try:
+            id_profesor = Carga_Horario.objects.get(profesor__usuario__name__icontains = nombre_profesor,
+                                                materia__nombre__icontains=nombre_materia,
+                                                materia__clase__periodo_lectivo__name=schoolyear,
+                                                materia__clase__clase_name = id_estudiante.clase.clase_name)
+            data["carga_horario"] = id_profesor.id
+            resultado_profesor = nombre_profesor_sinformato
+        except:
+            id_profesor = None
+            resultado_profesor = None
+
+        id_categoria = Categoria.objects.get(pk=nombre_categoria, periodo_lectivo__name=schoolyear)
         form = FaltaForma(data)
+        if id_estudiante == None:
+            form.errors["matricula"] = "The student is not registered."
+
+        if id_profesor == None:
+            form.errors["carga_horario"] = "The student does not attend to that class"
+
+
+
         if form.is_valid():
             falta = form.save()
             falta.save()
@@ -172,9 +240,12 @@ def crear(request):
                                                             {'profesor': nombre_profesor, "fecha": falta.fecha,
                                                              "categoria": falta.categoria.nombre,
                                                              "estudiante": nombre_estudiante, "detalle": falta.detalle})
-                send_mail(email_title_profesor, email_body_profesor, 'from@example.com',
+                try:
+                    send_mail(email_title_profesor, email_body_profesor, 'from@example.com',
                           [id_profesor.profesor.usuario.email], html_message=email_body_profesor_html,
                           fail_silently=True)
+                except:
+                    pass
 
                 email_title_representante = render_to_string('disciplina_sam/email_title_representante.txt',
                                                              {'categoria': id_categoria.nombre,
@@ -213,6 +284,25 @@ def crear(request):
                     send_mail(email_title_representante, email_body_representante, 'from@example.com',
                               [id_estudiante.estudiante.representante.usuario.email],
                               html_message=email_body_representante_html, fail_silently=True)
+                except:
+                    pass
+
+            if id_categoria.notificar_profesor2:
+                email_title_profesor = render_to_string('disciplina_sam/email_title_profesor2.txt',
+                                                        {'categoria': id_categoria.nombre,
+                                                         "estudiante": nombre_estudiante})
+                email_body_profesor = render_to_string('disciplina_sam/email_profesor2.txt',
+                                                       {'profesor': nombre_profesor, "fecha": falta.fecha,
+                                                        "categoria": falta.categoria.nombre,
+                                                        "estudiante": nombre_estudiante, "detalle": falta.detalle})
+                email_body_profesor_html = render_to_string('disciplina_sam/email_profesor2.html',
+                                                            {'profesor': nombre_profesor, "fecha": falta.fecha,
+                                                             "categoria": falta.categoria.nombre,
+                                                             "estudiante": nombre_estudiante, "detalle": falta.detalle})
+                try:
+                    send_mail(email_title_profesor, email_body_profesor, 'from@example.com',
+                          [id_profesor.profesor.usuario.email], html_message=email_body_profesor_html,
+                          fail_silently=True)
                 except:
                     pass
 
@@ -284,11 +374,68 @@ def crear(request):
 
         else:
             print form.errors
-            return render_to_response('disciplina_sam/registro', {'form': form}, context)
+            return render_to_response('disciplina_sam/registro', {'form': form, "nombre_matricula":resultado_estudiante, "nombre_profesor":resultado_profesor, "disciplina":disciplina2}, context)
     else:
-        form = FaltaForma()
-        form.fields["categoria"].queryset = Categoria.objects.filter(periodo_lectivo__name__icontains=schoolyear)
-        return render_to_response('disciplina_sam/registro', {'form': form}, context)
+
+        return render_to_response('disciplina_sam/registro', {'form': form, "disciplina":disciplina2}, context)
+
+def editar(request, falta_id):
+    disciplina2="Disciplina"
+    schoolyear = request.session["schoolyear"]
+    context = RequestContext(request)
+    falta = Falta.objects.get(pk = falta_id)
+    form = FaltaForma()
+    form.fields["categoria"].queryset = Categoria.objects.filter(periodo_lectivo__name__icontains=schoolyear)
+    if request.method == "POST":
+        data = request.POST.copy()
+        nombre_estudiante = data["matricula"]
+        nombre_profesor_sinformato = data["carga_horario"]
+        try:
+            nombre_materia, nombre_profesor = nombre_profesor_sinformato.split(" -- ")
+        except:
+            nombre_materia = nombre_profesor = nombre_profesor_sinformato
+
+        nombre_categoria = data["categoria"]
+        try:
+            id_estudiante = Matricula.objects.get(estudiante__usuario__name__icontains=nombre_estudiante,clase__periodo_lectivo__name=schoolyear)
+            data["matricula"] = id_estudiante.id
+            resultado_estudiante = nombre_estudiante
+        except:
+            id_estudiante = None
+            resultado_estudiante = None
+
+        try:
+            id_profesor = Carga_Horario.objects.get(profesor__usuario__name__icontains = nombre_profesor,
+                                                materia__nombre__icontains=nombre_materia,
+                                                materia__clase__periodo_lectivo__name=schoolyear,
+                                                materia__clase__clase_name = id_estudiante.clase.clase_name)
+            data["carga_horario"] = id_profesor.id
+            resultado_profesor = nombre_profesor_sinformato
+        except:
+            id_profesor = None
+            resultado_profesor = None
+
+        id_categoria = Categoria.objects.get(pk=nombre_categoria, periodo_lectivo__name=schoolyear)
+        form = FaltaForma(data, instance = falta)
+        if id_estudiante == None:
+            form.errors["matricula"] = "The student is not registered."
+
+        if id_profesor == None:
+            form.errors["carga_horario"] = "The student does not attend to that class"
+
+
+        if form.is_valid():
+
+            form.save()
+            return redirect(detalle_falta, falta_id)
+        else:
+            print form.errors
+            return render_to_response('disciplina_sam/editar_registro', {'form': form, "falta":falta, "disciplina":disciplina2}, context)
+    else:
+        form = FaltaForma(instance = falta)
+        nombre_matricula = falta.matricula.estudiante.usuario.name
+        nombre_carga_horario = falta.carga_horario.materia.nombre + " -- " + falta.carga_horario.profesor.usuario.name
+        return render_to_response('disciplina_sam/editar_registro', {'form': form, "falta":falta, "nombre_matricula":nombre_matricula, "nombre_carga_horario":nombre_carga_horario, "disciplina":disciplina2}, context)
 
 def cambiar_estado_disciplina(request, registro_id):
     registro = Falta.objects.get(pk=registro_id)
@@ -307,12 +454,14 @@ def reportes(request):
     return render(request, 'disciplina_sam/reportes', {'text': text})
 
 def detalle_falta(request, falta_id):
+    disciplina2 = "Disciplina"
     context = RequestContext(request)
     falta = Falta.objects.get(pk=falta_id)
     detalle_falta = Seguimiento_De_Falta.objects.filter(falta=falta_id)
-    return render_to_response('disciplina_sam/detalle', {'falta': falta, 'detalle_falta': detalle_falta}, context)
+    return render_to_response('disciplina_sam/detalle', {'falta': falta, 'detalle_falta': detalle_falta, "disciplina":disciplina2}, context)
 
 def crear_detalle(request, falta_id):
+    disciplina2="Disciplina"
     falta = Falta.objects.get(pk=falta_id)
     context = RequestContext(request)
     if request.method == 'POST':
@@ -325,31 +474,34 @@ def crear_detalle(request, falta_id):
             detalle_falta = Seguimiento_De_Falta.objects.filter(falta=falta_id)
             return render_to_response('disciplina_sam/crear_detalle',
                                       {'form': blank_form, 'falta_id': falta_id, 'falta': falta,
-                                       "detalle_falta": detalle_falta}, context)
+                                       "detalle_falta": detalle_falta, "disciplina":disciplina2}, context)
         else:
             print form.errors
             detalle_falta = Seguimiento_De_Falta.objects.filter(falta=falta_id)
             return render_to_response('disciplina_sam/crear_detalle',
                                       {'form': form, 'falta_id': falta_id, 'falta': falta,
-                                       "detalle_falta": detalle_falta}, context)
+                                       "detalle_falta": detalle_falta, "disciplina":disciplina2}, context)
     else:
         form = AccionForma()
         detalle_falta = Seguimiento_De_Falta.objects.filter(falta=falta_id)
         return render_to_response('disciplina_sam/crear_detalle',
-                                  {'form': form, 'falta_id': falta_id, 'falta': falta, "detalle_falta": detalle_falta},
+                                  {'form': form, 'falta_id': falta_id, 'falta': falta, "detalle_falta": detalle_falta, "disciplina":disciplina2},
                                   context)
 
 def categorias(request):
+    configuracion = "Configuracion"
     context = RequestContext(request)
     schoolyear = request.session["schoolyear"]
     categorias = Categoria.objects.filter(periodo_lectivo__name=schoolyear)
-
     if request.method == "POST":
-        data = request.POST.copy()
+        form = CategoriaForm(request.POST)
         periodo_lectivo_actual = Periodo_Lectivo.objects.get(name=schoolyear)
+
+        data = request.POST.copy()
+
         # data["periodo_lectivo"] = periodo_lectivo_actual.id
         #form = CategoriaForm(data)
-        form = CategoriaForm(request.POST)
+
         if form.is_valid():
             nueva_categoria = form.save(commit=False)
             nueva_categoria.periodo_lectivo = periodo_lectivo_actual
@@ -357,7 +509,7 @@ def categorias(request):
                 if nueva_categoria.eventos_parcial <=0:
 
                     print form.errors
-                    return render_to_response("disciplina_sam/categoria", {"categorias": categorias, "form": form}, context)
+                    return render_to_response("disciplina_sam/categoria", {"categorias": categorias, "form": form, "configuracion":configuracion}, context)
                 else:
                     pass
             else:
@@ -367,29 +519,60 @@ def categorias(request):
                 if nueva_categoria.eventos_patron <=0:
 
                     print form.errors
-                    return render_to_response("disciplina_sam/categoria", {"categorias": categorias, "form": form}, context)
+                    return render_to_response("disciplina_sam/categoria", {"categorias": categorias, "form": form, "configuracion":configuracion}, context)
                 else:
                     pass
                 if nueva_categoria.periodo_patron <=0:
 
                     print form.errors
-                    return render_to_response("disciplina_sam/categoria", {"categorias": categorias, "form": form}, context)
+                    return render_to_response("disciplina_sam/categoria", {"categorias": categorias, "form": form, "configuracion":configuracion}, context)
                 else:
                     pass
 
             else:
                 pass
-
             nueva_categoria.save()
             form = CategoriaForm()
 
-            return render_to_response("disciplina_sam/categoria", {"categorias": categorias, "form": form}, context)
+            return render_to_response("disciplina_sam/categoria", {"categorias": categorias, "form": form, "configuracion":configuracion}, context)
         else:
             print form.errors
-            return render_to_response("disciplina_sam/categoria", {"categorias": categorias, "form": form}, context)
+            return render_to_response("disciplina_sam/categoria", {"categorias": categorias, "form": form, "configuracion":configuracion}, context)
     else:
         form = CategoriaForm()
-        return render_to_response("disciplina_sam/categoria", {"categorias": categorias, "form": form}, context)
+        return render_to_response("disciplina_sam/categoria", {"categorias": categorias, "form": form, "configuracion":configuracion}, context)
+
+def editar_categorias(request,categoria_id):
+    configuracion = "Configuracion"
+    context = RequestContext(request)
+    schoolyear = request.session["schoolyear"]
+    categorias = Categoria.objects.filter(periodo_lectivo__name=schoolyear)
+    if Falta.objects.filter(categoria = categoria_id):
+        borrar = None
+    else:
+        borrar = "Borrar"
+
+    if request.method == "POST":
+        categoria = Categoria.objects.get(pk=categoria_id)
+        form = CategoriaForm(request.POST, instance = categoria)
+        if form.is_valid():
+            form.save()
+            new_form = CategoriaForm()
+            return render_to_response("disciplina_sam/categoria", {"categorias": categorias, "form": new_form, "configuracion":configuracion}, context)
+        else:
+            print form.errors
+            return render_to_response("disciplina_sam/editar_categoria/", {"categorias": categorias, "form": form, "categoria_id":categoria_id , "erase":borrar, "configuracion":configuracion}, context)
+    else:
+        categoria = Categoria.objects.get(pk=categoria_id)
+        form = CategoriaForm(instance = categoria)
+        return render_to_response("disciplina_sam/editar_categoria/" , {"categorias": categorias, "form": form, "categoria_id":categoria_id , "erase":borrar, "configuracion":configuracion}, context)
+
+def borrar_categorias(request, categoria_id):
+    instance = Categoria.objects.get(pk = categoria_id)
+    instance.delete()
+    return redirect(categorias)
+
+
 
 
 # Create your views here.

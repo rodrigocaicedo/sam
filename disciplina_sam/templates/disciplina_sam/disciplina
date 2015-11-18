@@ -27,7 +27,7 @@ Lista de registros activos
                                         <tr>
                                             <th>Fecha</th>
                                             <th>Estudiante</th>
-                                            <th>Profesor</th>
+                                            <th>Materia</th>
                                             <th>Categoría</th>
                                             <th>Estado</th>
                                         </tr>
@@ -37,7 +37,7 @@ Lista de registros activos
                                             <tr>
                                                 <td><a href="/faltas/disciplina/detalle/{{falta.id}}/">{{falta.fecha}}</a></td>
                                                 <td>{{falta.matricula.estudiante.usuario.name}}</td>
-                                                <td>{{falta.carga_horario.profesor.usuario.name}}</td>
+                                                <td>{{falta.carga_horario.materia.nombre}}</td>
                                                 <td>{{falta.categoria}}</td>
                                                 <td>
                                                 {% if falta.activo == True %}<a href="/faltas/disciplina/estado/{{falta.id}}/">

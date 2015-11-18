@@ -8,7 +8,7 @@ Estudiante: {{estudiante}}
 Profesor: {{profesor}}
 Detalle: {{detalle}}
 
-En el transcurso del día recibirá una notificación vía Engrade de parte del profesor, indicando a detalle el problema suscitado.
+En el transcurso del día recibirá una notificación electrónica de parte del profesor, indicando a detalle el problema suscitado.
 
 Muchas gracias,
 

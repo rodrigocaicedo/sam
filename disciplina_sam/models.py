@@ -14,13 +14,14 @@ class Patrones_Categoria(models.Model):
 
 class Categoria(models.Model):
     nombre = models.CharField(max_length=40)
-    notificar_profesor = models.BooleanField(default = False)
-    notificar_representante = models.BooleanField(default = False)
+    notificar_profesor = models.BooleanField(default = False) # envia mensajes al profesor y representante por falta seria
+    notificar_representante = models.BooleanField(default = False) # envia mensaje al representante pidiendo conversar con alumno
+    notificar_profesor2 = models.BooleanField(default = False) #envia mensaje al profesor pidiendo seguir protocolo
     patrones_en_parcial = models.BooleanField(default = False)
-    eventos_parcial = models.IntegerField(blank = True, null = True , error_messages={'required': 'Ingrese un numero mayor a 0'})
+    eventos_parcial = models.IntegerField(blank = True, null = True)
     patrones_en_periodo = models.BooleanField(default = False)
-    periodo_patron = models.IntegerField(blank = True, null = True, error_messages={'required': 'Ingrese un numero mayor a 0'})
-    eventos_patron = models.IntegerField(blank = True, null= True, error_messages={'required': 'Ingrese un numero mayor a 0'})
+    periodo_patron = models.IntegerField(blank = True, null = True)
+    eventos_patron = models.IntegerField(blank = True, null= True)
     periodo_lectivo = models.ForeignKey('configuracion_sam.Periodo_Lectivo', related_name='config_periodo_lectivo')
 
     class Meta:
