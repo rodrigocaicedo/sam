@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}
+Requisición de Materiales
+{% endblock %}
+{% block subtitle %}
+Lista de Requisiciones
+{% endblock %}
+{% block content %}
+{% if requisiciones %}
+<div class="table-responsive">
+<table class="table table-bordered table-hover">
+<thead>
+<tr>
+    <th>Profesor</th>
+    <th>Fecha</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for requisicion in requisiciones %}
+        <tr>
+            <td><a>{{requisicion.carga_horario.profesor.usuario.name}}</a></td>
+            <td><a href="/">{{requisicion.fecha}}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+
+</table>
+</div>
+{% else %}
+    <p>No requisiciones are available.</p>
+{% endif %}
+
+{% endblock %}
+

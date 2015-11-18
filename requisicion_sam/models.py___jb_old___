@@ -1,0 +1,19 @@
+from django.db import models
+from configuracion_sam.models import Profesor
+
+class Requisicion(models.Model):
+
+    profesor = models.ForeignKey("configuracion_sam.Profesor")
+    fecha = models.DateField()
+
+class Item_Request(models.Model):
+    Requisicion = models.ForeignKey("Requisicion")
+    item = models.CharField(max_length = 20)
+    cantidad = models.PositiveSmallIntegerField()
+    presentacion = models.CharField(max_length = 1)
+    detalle = models.TextField()
+    descripcion_uso = models.TextField()
+    revisado = models.BooleanField(default = False)
+
+
+# Create your models here.

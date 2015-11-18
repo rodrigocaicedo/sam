@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}
+Requisición de Materiales
+{% endblock %}
+{% block subtitle %}
+Añadir a requisición
+{% endblock %}
+{% block content %}
+{{request.session.items}}
+{% if request.session.items %}
+<div class="table-responsive">
+<table class="table table-bordered table-hover">
+<thead>
+<tr>
+    <th>Profesor</th>
+    <th>Fecha</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for item in request.session.items %}
+        <tr>
+            <td><a>{{item.cantidad}}</a></td>
+            <td><a href="/">{{item.presentacion}}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+
+
+
+</table>
+
+
+
+</div>
+{% else %}
+    <p>No requisiciones are available.</p>
+{% endif %}
+
+<form id=regitro_items" method="post" action="/pedidos/add_item/{{requisicion_id}}/">
+{% csrf_token %}
+{{form.as_table}}
+<input type="submit" name="submit" value="Añadir" />
+
+{% endblock %}
+

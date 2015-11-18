@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}
+Requisición de Materiales
+{% endblock %}
+{% block subtitle %}
+Lista de Requisiciones
+{% endblock %}
+{% block content %}
+{% if requisiciones %}
+
+
+{{form}}
+</div>
+
+
+{% endblock %}
+

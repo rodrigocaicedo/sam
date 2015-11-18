@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% load extras %}
+{% block title %}
+Categorías de registro disciplinario
+{% endblock %}
+{% block content %}
+                <div class="row">
+                    <div class="col-lg-12">
+                        <ol class="breadcrumb">
+                            <li>
+                                <i class="fa fa-home"></i><a href="/faltas/"> Inicio</a>
+                            </li>
+                            <li>
+                                <i class="fa fa-meh-o"></i><a href="/faltas/disciplina"> Disciplina</a>
+                            </li>
+                            <li>
+                                <i class="fa fa-check"></i><a href="/faltas/asistencia/"> Asistencia</a>
+                            </li>
+
+                        </ol>
+                    </div>
+                </div>
+
+    <div class="row">
+        <div class = "col-lg-6">
+            <div class="form-group">
+
+                <form id=regitro_falta" method="post" action="/faltas/configuracion/">
+                    {% csrf_token %}
+                        <br style="line-height:5px" />
+                        {{form.non_field_errors}}
+                        <ul>
+                        <label for="id_nombre">Nombre:</label>
+                        <input class="form-group" id="id_nombre" maxlength="40" name="nombre" type="text">
+                        <hr>
+                        <label for="id_patrones_en_parcial">Evaluar patrones en el parcial</label>
+                        <input class="form-group" id="id_patrones_en_parcial" name="patrones_en_parcial" type="checkbox">
+                        <br style="line-height:5px" />
+                        <label for="id_eventos_parcial">Número de eventos a evaluar:</label>
+                        <input class="form-group" id="id_eventos_parcial" name="eventos_parcial" type="number">
+                        <hr>
+                        <label for="id_patrones_en_periodo">Evaluar patrones en un período de tiempo</label>
+                        <input class="form-group" id="id_patrones_en_periodo" name="patrones_en_periodo" type="checkbox">
+                        <br style="line-height:5px" />
+                        <label for="id_periodo_patron">Periodo de tiempo a evaluar:</label>
+                        <input class="form-group" id="id_periodo_patron" name="periodo_patron" type="number">
+                        <br style="line-height:5px" />
+                        <label for="id_eventos_patron">Número de eventos a evaluar:</label>
+                        <input class="form-group" id="id_eventos_patron" name="eventos_patron" type="number">
+                        <hr>
+                        <label for="id_notificar_profesor">Notificar profesor:</label>
+                        <input class="form-group" id="id_notificar_profesor" name="notificar_profesor" type="checkbox">
+                        <br style="line-height:5px" />
+                        <label for="id_notificar_representante">Notificar representante:</label>
+                        <input class="form-group" id="id_notificar_representante" name="notificar_representante" type="checkbox">
+                        <br></br>
+
+                        <input type="submit" name="submit" value="Crear categoría" />
+
+                        {% if erase %}
+                        <p></p>
+
+                        <input type="submit" name="erase" value="Borrar categoría" formaction="/faltas/configuracion/borrar/{{categoria_id}}/" />
+                        {% endif %}
+
+                       
+                    </ul>
+
+            </div>
+        </div>
+        <div class = "col-lg-6">
+            {% if categorias %}
+                <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Seguimiento en Parcial</th>
+                            <th>Seguimiento en Período</th>
+                        </tr>
+                    </thead>
+                <tbody>
+            {% for categoria in categorias %}
+                <tr>
+                    <td><a href="/faltas/configuracion/editar/{{categoria.id}}/">{{categoria.nombre}}</td>
+                    {%if categoria.patrones_en_parcial %}
+                        <td><i class="fa fa-check"></i>   {{categoria.eventos_parcial}} eventos</td>
+                    {% else %}
+                        <td><i class="fa fa-times"></i></td>
+                    {% endif %}
+                    {% if categoria.patrones_en_periodo %}
+                        <td><i class="fa fa-check"></i>   {{categoria.eventos_patron}} eventos / {{categoria.periodo_patron}} días</td>
+                    {% else %}
+                        <td><i class="fa fa-times"></i></td>
+                    {% endif %}
+
+                </tr>
+            {% endfor %}
+            {% else %}
+                <p><strong>No existe categorías disciplinarias registradas.</strong></p>
+            {% endif %}
+                </tbody>
+                </table>
+
+        </div>
+    </div>
+
+{%  endblock %}
+

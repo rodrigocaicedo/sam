@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% load extras %}
+{% load staticfiles %}
+
+
+{% block title %}
+Búsqueda de registros disciplinarios
+{% endblock %}
+{% block subtitle %}
+{% endblock %}
+{% block content %}
+
+<div class="row">
+                    <div class="col-lg-9">
+                        <ol class="breadcrumb">
+                            <li>
+                                <i class="fa fa-home"></i><a href="/faltas/"> Inicio</a>
+                            </li>
+                            <li>
+                                <i class="fa fa-meh-o"></i><a href="/faltas/disciplina/"> Disciplina</a>
+                            </li>
+                            <li>
+                                <i class="fa fa-file-o"></i><a href="/faltas/disciplina/registro/"> Crear registro</a>
+                            </li>
+                        </ol>
+
+
+<form method="get" action="/faltas/disciplina/busqueda/">
+          
+        <label for="id_q_estudiante">Estudiante:</label>
+           <input type="text" class ="form-group" name="q_estudiante" id="id_q_estudiante"/>
+       <label for="id_q_profesor">Profesor:</label>
+           <input type="text" class ="form-group" name="q_profesor" id="id_q_profesor"/>
+       <label for="id_q">Fecha:</label>
+           <input type="text" class ="datepicker" name="q" id="id_q"/>
+       <label for="id_q_categoria">Categoria:</label>
+
+           <input type="text" class ="form-group" name="q_categoria" id="id_q_categoria"/>
+
+           </br>
+       <label for="id_q_estado">Activo:</label>
+           <input type="radio" class ="form-group" name="q_estado" id="id_q_estado" value="Activo" {%if estado == True %}checked {% endif %}/></br>
+
+       <label for="id_q_estado">No activo:</label>
+           <input type="radio" class ="form-group" name="q_estado" id="id_q_estado" value="No activo" {% if estado == False %} checked {% endif %}/></br>
+           <input type="submit" value="Submit"/>
+
+        </form>
+        {{ debug }}
+{%if nuevo == True%}
+
+{% elif nuevo == False %}
+
+  {% if results %}
+    </br>
+    </br>
+    <div class="Wrapper">
+      <div class="table-responsive">
+
+      <table class="table table-bordered table-hover">
+          <thead>
+              <tr>
+                  <th>Estudiante</th>
+                  <th>Profesor</th>
+                  <th>Fecha</th>
+                  <th>Categoría</th>
+                  <th>Estado</th>
+              </tr>
+          </thead>
+          <tbody>
+
+
+
+          {% for result in results %}
+                  <tr>
+                      <td><a href="/faltas/disciplina/detalle/{{result.id}}/">{{result.matricula.estudiante.usuario.name}}</a></td>
+                      <td>{{result.carga_horario.profesor.usuario.name}}</td>
+                      <td>{{result.fecha}}</td>
+                      <td>{{result.categoria}}</td>
+                      {% if result.activo == True %}<td><a href="/faltas/disciplina/estado/{{result.id}}/">
+                        Activo</a></td>
+                        {% elif result.activo == False %}
+                        <td><a href="/faltas/disciplina/estado/{{result.id}}/">No activo</a></td>
+                      {% endif %}
+
+                  </tr>
+          {% endfor %}
+          </tbody>
+      </table>
+      </div>
+    </div>
+  {% else %}
+<p>No existe resultados para su búsqueda.</p>
+  {% endif %}
+
+{% endif %}
+
+                    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>$( ".datepicker" ).datepicker({dateFormat : "yy-mm-dd"});</script>
+
+<script>
+$(function() {
+  $("#id_q_estudiante").autocomplete({
+    source: "/faltas/ac_estudiante/",
+    minLength: 2,
+  });
+});
+</script>
+
+<script>
+$(function() {
+  $("#id_q_profesor").autocomplete({
+    source: "/faltas/ac_profesor_busqueda/",
+    minLength: 2,
+  });
+});
+</script>
+<script>
+$(function() {
+  $("#id_q_categoria").autocomplete({
+    source: "/faltas/ac_categoria/",
+    minLength: 2,
+  });
+});
+</script>
+{% endblock %}

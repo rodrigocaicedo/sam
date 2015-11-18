@@ -1,0 +1,14 @@
+Estimado {{ profesor }}: <br/>
+ <br/>
+Se ha creado un registro disciplinario con la siguiente información: <br/>
+ <br/>
+Fecha: {{ fecha }} <br/>
+Categoría : {{categoria}} <br/>
+Estudiante: {{estudiante}} <br/>
+Detalle: {{detalle}} <br/>
+ <br/>
+Por la categoría de este registro, es necesario que envíe un mensaje al representante de {{estudiante}} en el cual le explique cómo se dieron los hechos. <br/>
+ <br/>
+Muchas gracias, <br/>
+ <br/>
+DCCE - Montebello
