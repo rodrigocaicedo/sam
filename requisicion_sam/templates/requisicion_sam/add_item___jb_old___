@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}
+Requisición de Materiales
+{% endblock %}
+{% block subtitle %}
+Añadir a requisición
+{% endblock %}
+{% block content %}
+{% if items %}
+<div class="table-responsive">
+<table class="table table-bordered table-hover">
+<thead>
+<tr>
+    <th>Item</th>
+    <th>Cantidad</th>
+    <th>Presentación</th>
+    </tr>
+    </thead>
+
+    <tbody>
+
+    {% for item in items %}
+        <tr>
+            <td><a>{{item.item}}</a></td>
+            <td><a>{{item.cantidad}}</a></td>
+            <td><a href="/">{{item.presentacion}}</td>
+
+        </tr>
+    {% endfor %}
+    </tbody>
+
+</table>
+{% endif %}
+<form id=regitro_items" method="post" action="/pedidos/add_item/{{requisicion_id}}/">
+{% csrf_token %}
+{{form.non_field_errors}}
+    <div class="form-group"></br>
+
+        {{form.item.errors}}
+        {{form.item.label_tag}}
+        <input type="text" class="item" id="id_item" name="item" >
+    </div>
+
+    <div class="form-group"></br>
+
+        {{form.cantidad.errors}}
+        {{form.cantidad.label_tag}}
+        <input type="text" class="cantidad" id="id_cantidad" name="cantidad" >
+    </div>
+
+    <div class="form-group"></br>
+
+        {{form.presentacion.errors}}
+        {{form.presentacion.label_tag}}
+        <input type="text" class="presentacion" id="id_presentacion" name="presentacion" >
+
+    <div class="form-group"></br>
+
+        {{form.detalle.errors}}
+        {{form.detalle.label_tag}}
+        <input type="text" class="detalle" id="id_detalle" name="detalle" >
+
+    <div class="form-group"></br>
+
+        {{form.descripcion_uso.errors}}
+        {{form.descripcion_uso.label_tag}}
+        <input type="text" class="descripcion_uso" id="id_descripcion_uso" name="descripcion_uso" >
+    </div>
+
+<input type="submit" name="submit" value="Añadir" />
+{% endblock %}
