@@ -5,7 +5,9 @@ from requisicion_sam import views
 
 urlpatterns = patterns('',
     url(r'^$',views.index, name='index'),
-    url(r'^crear/',views.create_request, name='create'),
+    url(r'^nuevo/',views.add_item, name='nuevo'),
+    url(r'^otro/', views.add_another_item, name='otro'),
+    url(r'^editar/(?P<item>\d+)/$',views.edit_item, name='editar'),
 #    url(r'^ac_estudiante/', views.ac_estudiante, name='ac_estudiante'),
 #    url(r'^ac_profesor/', views.ac_profesor, name='ac_profesor'),
 #    url(r'^ac_categoria/', views.ac_categoria, name='ac_categoria'),

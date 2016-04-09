@@ -163,6 +163,10 @@
                         <li>
                             <a href="#"><i class="fa fa-fw fa-gear"></i> Settings</a>
                         </li>
+                        <li>
+                            {% if pedidos %}<li class ="active">{% endif %}
+                            <a href="/pedidos/"><i class="fa fa-fw fa-shopping-cart"></i> Pedidos</a>
+                        </li>
                         <li class="divider"></li>
                         <li>
                             <a href=/accounts/logout/><i class="fa fa-fw fa-power-off"></i> Log Out</a>
@@ -174,19 +178,19 @@
             <div class="collapse navbar-collapse navbar-ex1-collapse">
                 <ul class="nav navbar-nav side-nav">
                     <li>
-	            {% if index %}<li class ="active">{% endif %}              
+	                    {% if index %}<li class ="active">{% endif %}
                         <a href="/faltas/"><i class="fa fa-fw fa-home"></i> Inicio</a>
                     </li>
                     <li>
-                    {% if disciplina %}<li class="active">{% endif %}
+                        {% if disciplina %}<li class="active">{% endif %}
                         <a href="/faltas/disciplina"><i class="fa fa-fw fa-meh-o"></i> Disciplina</a>
                     </li>
                     <li>
-                    {% if asistencia %}<li class="active">{% endif %}
+                        {% if asistencia %}<li class="active">{% endif %}
                         <a href="/faltas/asistencia"><i class="fa fa-fw fa-check"></i> Asistencia</a>
                     </li>
                     <li>
-                    {% if reporte %}<li class="active">{% endif %}
+                        {% if reporte %}<li class="active">{% endif %}
                         <a href="/faltas/reportes"><i class="fa fa-fw fa-table"></i> Reportes</a>
                     </li>
                     <li>

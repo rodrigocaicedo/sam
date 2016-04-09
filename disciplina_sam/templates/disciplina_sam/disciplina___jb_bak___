@@ -45,7 +45,7 @@ Lista de registros activos
                                                 {% elif falta.activo == False %}
                                                 <a href="/faltas/disciplina/estado/{{falta.id}}/">No activo</a>
                                                 {% endif %}
-                                                <span class = "pull-right"><a href="/faltas/disciplina/detalle/crear/{{falta.id}}/"><trong>...</strong></a></span>
+                                                <span class = "pull-right"><a href="/faltas/disciplina/detalle/crear/{{falta.id}}/"><strong>...</strong></a></span>
                                                 </td>
                                             </tr>
                                         {% endfor %}

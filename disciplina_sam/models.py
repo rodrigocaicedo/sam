@@ -1,5 +1,5 @@
 from django.db import models
-from configuracion_sam.models import Periodo_Lectivo, Subperiodo, Clase, Estudiante, Profesor, Matricula, Carga_Horario
+from configuracion_sam.models import Periodo_Lectivo, Subperiodo, Clase, Grupo, Estudiante, Profesor, Matricula, Pensum, Malla_Curricular
 
 
 class Patrones_Categoria(models.Model):
@@ -32,7 +32,7 @@ class Categoria(models.Model):
 
 class Falta(models.Model):
     fecha = models.DateField()
-    carga_horario = models.ForeignKey('configuracion_sam.Carga_Horario', related_name='config_profesor')
+    carga_horario = models.ForeignKey('configuracion_sam.Pensum', related_name='config_profesor')
     matricula = models.ForeignKey('configuracion_sam.Matricula', related_name='config_matricula')
     categoria = models.ForeignKey('Categoria')
     detalle = models.TextField()

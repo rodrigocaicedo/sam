@@ -8,6 +8,7 @@ Lista de Requisiciones
 {% block content %}
 <div class="table-responsive">
 <form id=regitro_requisicion" method="post" action="/pedidos/crear/">
+{% csrf_token %}
 {{form}}
 <input type="submit" name="submit" value="Crear" />
 </div>

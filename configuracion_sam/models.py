@@ -121,15 +121,18 @@ class Estructura_Subperiodo(models.Model):
 
 
 class Clase(models.Model):
+
     clase_name = models.CharField(max_length=20)
     periodo_lectivo = models.ForeignKey('Periodo_Lectivo')
     nivel = models.IntegerField()
+    nombre_ministerio = models.CharField(max_length=20)
 
     class Meta:
         unique_together = ('clase_name','periodo_lectivo',)
 
     def __unicode__(self):
-       return self.periodo_lectivo.name + " " + self.clase_name
+       return self.clase_name + " " + self.periodo_lectivo.name
+
 
 class Representante(models.Model):
     usuario = models.OneToOneField("CustomUser")
@@ -142,47 +145,203 @@ class Estudiante(models.Model):
     usuario = models.OneToOneField('CustomUser')
     representante = models.ForeignKey("Representante")
 
-#    name = models.CharField(max_length=30)
-
     def __unicode__(self):
         return self.usuario.name
 
 
 class Profesor(models.Model):
     usuario = models.OneToOneField("CustomUser")
-#   name = models.CharField(max_length=30)
+
+    def __unicode__(self):
+        return self.usuario.name
+
+class Coordinador_Seccion(models.Model):
+    usuario = models.OneToOneField('CustomUser')
+
+    def __unicode__(self):
+        return self.usuario.name
+
+class Coordinador_Area_Academica(models.Model):
+    usuario = models.OneToOneField('CustomUser')
 
     def __unicode__(self):
         return self.usuario.name
 
 
 class Matricula(models.Model):
+
+    ordinaria = "OR"
+    extraordinaria = "EX"
+    tipo = (
+        (ordinaria, "Ordinaria"),
+        (extraordinaria, "Extraordinaria"),
+        )
+
+    A = "A"
+    B = "B"
+    C = "C"
+    paralelo = (
+        (A, "A"),
+        (B, "B"),
+        (C, "C"),
+    )
+
+
     estudiante = models.ForeignKey('Estudiante')
     clase = models.ForeignKey('Clase')
-    
+    paralelo = models.CharField(max_length=1,
+                                choices=paralelo,
+                                default=A)
+    fecha = models.DateField()
+    tipo = models.CharField(max_length = 2,
+                            choices = tipo,
+                            default = ordinaria)
+    activo = models.BooleanField(default=True)
+
     class Meta:
         unique_together = ('estudiante', 'clase', )
+
     def __unicode__(self):
         return self.clase.periodo_lectivo.name + " " +self.estudiante.usuario.get_full_name()
 
 
+class Malla_Curricular(models.Model):
+
+    cualitativa = "C"
+    cuantitativa = "Q"
+    destrezas = "D"
+    tipo = (
+        (cualitativa, "Cualitativa"),
+        (cuantitativa, "Cuantitativa"),
+        (destrezas, "Por Destrezas")
+    )
+
+    clase = models.ForeignKey('Clase')
+    nombre_materia = models.CharField(max_length = 20)
+    tipo = models.CharField(max_length = 1,
+                            choices = tipo,
+                            default = cuantitativa)
+
+    class Meta:
+        unique_together = ('clase', 'nombre_materia',)
+
+    def __unicode__(self):
+        return self.nombre_materia + " " + self.clase.clase_name
+
+
+class Seccion(models.Model):
+    nombre = models.TextField(max_length=40)
+
+    def __unicode__(self):
+        return self.nombre
+
+
+class Coordinadores_De_Seccion(models.Model):
+    seccion = models.ForeignKey('Seccion')
+    coordinadores = models.ManyToManyField('Coordinador_Seccion')
+    fecha_inicio = models.DateField()
+    fecha_fin = models.DateField(blank=True, null=True)
+    activo = models.BooleanField(default = True)
+
+    class Meta:
+        unique_together=('seccion','activo',)
+
+    def __unicode__(self):
+        return self.seccion.nombre
+
+
+class Grupo(models.Model):
+
+    periodo_lectivo = models.ForeignKey('Periodo_Lectivo')
+    nombre = models.CharField(max_length = 20)
+    descripcion = models.TextField()
+    seccion = models.ForeignKey('Seccion')
+
+    class Meta:
+        unique_together = ('periodo_lectivo', 'nombre',)
+
+    def __unicode__(self):
+        return self.nombre + " " + self.periodo_lectivo.name
+
+
+class Inscripcion_Grupo(models.Model):
+    matricula = models.ForeignKey('Matricula')
+    grupo = models.ForeignKey('Grupo')
+    inicio = models.DateField()
+    fin = models.DateField(null=True, blank=True)
+    activo = models.BooleanField(default=True)
+
+    class Meta:
+        unique_together = ('matricula','grupo','activo',)
+
+    def __unicode__(self):
+        return self.matricula.estudiante.usuario.name + " - " + self.grupo.nombre
+
+
+class Area_Academica(models.Model):
+    nombre=models.TextField(max_length = 40)
+    coordinador = models.ForeignKey('Coordinador_Area_Academica')
+    fecha_inicio=models.DateField()
+    fecha_fin=models.DateField(null=True,blank=True)
+    activo=models.BooleanField(default=True)
+
+    class Meta:
+        unique_together=('nombre','activo',)
+
+    def __unicode__(self):
+        return self.nombre
+
+class Coordinadores_De_Area_Academica(models.Model):
+    area_academica = models.ForeignKey('Area_Academica')
+    coordinador = models.ForeignKey('Coordinador_Area_Academica')
+    grupos = models.ManyToManyField('Grupo')
+    fecha_inicio = models.DateField()
+    fecha_fin = models.DateField(blank=True, null=True)
+    activo = models.BooleanField(default = True)
+
+    class Meta:
+        unique_together=('area_academica','coordinador','activo',)
+
+    def __unicode__(self):
+        return self.seccion.nombre + " - " + self.coordinador.usuario.name
+
 
 class Materia(models.Model):
     nombre = models.TextField(max_length = 30)
-    clase = models.ForeignKey("Clase")
-
-    def __unicode__(self):
-        return self.nombre + " " + self.clase.periodo_lectivo.name + " " + self.clase.clase_name
-
-
-class Carga_Horario(models.Model):
-    profesor = models.ForeignKey("Profesor")
-    materia = models.ForeignKey("Materia")
-    activo = models.BooleanField(default = False)
+    area_academica = models.ForeignKey('Area_Academica')
+    periodos_lectivos=models.ManyToManyField('Periodo_Lectivo')
 
     class Meta:
-        unique_together = ('profesor','activo','materia',)
-    def __unicode__(self):
-        return self.profesor.usuario.name + " / " + self.materia.nombre + " / " + self.materia.clase.clase_name + " / " + self.materia.clase.periodo_lectivo.name
+        unique_together=('nombre','area_academica',)
 
+    def __unicode__(self):
+        return self.nombre + " - " + self.area_academica.nombre
+
+
+class Pensum(models.Model):
+
+    cualitativa = "C"
+    cuantitativa = "Q"
+    destrezas = "D"
+    tipo = (
+        (cualitativa, "Cualitativa"),
+        (cuantitativa, "Cuantitativa"),
+        (destrezas, "Por Destrezas")
+    )
+
+    grupo = models.ForeignKey('Grupo')
+    materia = models.ForeignKey('Materia')
+    profesor = models.ForeignKey('Profesor')
+    evaluacion = models.CharField(max_length = 1,
+                            choices = tipo,
+                            default = cuantitativa)
+    inicio = models.DateField()
+    fin = models.DateField(null=True, blank=True)
+    activo = models.BooleanField()
+
+    class Meta:
+        unique_together = ('grupo', 'materia', 'activo',)
+
+    def __unicode__(self):
+        return self.grupo.nombre + " " + self.materia.nombre + " " + self.profesor.usuario.name
 

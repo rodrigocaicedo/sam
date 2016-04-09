@@ -1,3 +1,5 @@
 from django.contrib import admin
+from requisicion_sam.models import *
 
-# Register your models here.
+admin.site.register(Pedido_Item)
+

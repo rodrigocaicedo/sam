@@ -25,10 +25,10 @@ Nuevo registro disciplinario
         {{form.non_field_errors}}
 
         <div class="form-group"></br>
-            {{form.matricula}}
- <!--       {{error_datos.error_matricula}}-->
- <!--       {{form.matricula.errors}}-->
- <!--    {{form.matricula.label_tag}}-->
+ <!--           {{form.matricula}} -->
+        {{error_datos.error_matricula}}
+        {{form.matricula.errors}}
+        {{form.matricula.label_tag}}
         <input type="text" class="matricula" id="matricula" name="matricula" value="{% if nombre_matricula %}{{nombre_matricula}}""{% else %}""{% endif %}>
         </div>
         
@@ -51,7 +51,7 @@ Nuevo registro disciplinario
         {{error_datos.error_categoria}}
         {{form.categoria.errors}}
         {{form.categoria.label_tag}}
-        {{form.categoria}}
+        {{form.categoria|addcss:"form-control"}}
 
         </div>
         

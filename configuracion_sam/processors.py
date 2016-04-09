@@ -12,7 +12,7 @@ def schoolyear_list(request):
 			current_schoolyear = Periodo_Lectivo.objects.get(inicio__lte=today, fin__gte=today)
 			request.session['schoolyear'] = current_schoolyear.name
 		else:
-			request.session['schoolyear'] = "Seleccione..."
+			request.session['schoolyear'] = "Que mas ve..."
 
 	return {'schoolyears':Periodo_Lectivo.objects.all().order_by("-name")}
 

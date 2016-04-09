@@ -1,34 +1,129 @@
 {% extends "base.html" %}
+{% block style %}
+    <style>
+    .breadcrumb>#id29+#id29:before {
+        content: "  ";}
+    a.icon-block {
+            display:inline-block;
+            width:10px;
+            float:center;
+            text-align:center;
+            color:Black;
+        }
+
+        a.icon-block i,
+        a.icon-block span {
+            display:block;
+            width:100%;
+            clear:both;
+        }
+        a.icon-block:link, a.icon-block:visited, a.icon-block:hover, a.icon-block:active{
+            text-decoration: none;
+            color:grey;
+            }
+    </style>
+{% endblock %}
 {% block title %}
-Requisición de Materiales
+Pedido de Materiales
 {% endblock %}
 {% block subtitle %}
-Lista de Requisiciones
 {% endblock %}
 {% block content %}
-{% if requisiciones %}
-<div class="table-responsive">
-<table class="table table-bordered table-hover">
-<thead>
-<tr>
-    <th>Profesor</th>
-    <th>Fecha</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for requisicion in requisiciones %}
-        <tr>
-            <td><a>{{requisicion.profesor.usuario.name}}</a></td>
-            <td><a href="/">{{requisicion.fecha}}</td>
-        </tr>
-    {% endfor %}
-    </tbody>
+                <div class = "row">
+                    <div class="col-lg-12">
+                        <ol class="breadcrumb">
+                            <li>
+                                <i class="fa fa-home"></i><a href="/faltas/"> Inicio</a>
+                            </li>
+                            <li>
+                                <i class="fa fa-shopping-cart"></i><a href="/pedidos/"> Pedidos</a>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="page-header" style="margin: 10px 0 10px;">
+                                <h2>Pedidos pendientes<h2>
+                        </div>
+                        <div class="panel">
 
-</table>
-</div>
-{% else %}
-    <p>No requisiciones are available.</p>
-{% endif %}
+                                <ol class="breadcrumb" style="background:white; margin-bottom:0px;padding-top:20px; padding-left:20px;">
+                                    <li id="id29" >
+                                    <a href="/pedidos/nuevo/" class="icon-block"><i class="fa fa-plus"></i></a>
+                                    </li>
+                                    <li id="id29" >
+                                    <a href="" class="icon-block"><i class="fa fa-refresh"></i></a>
+                                    </li>
+                                </ol>
+
+                            <div class="panel-body">
+                            {% if pedidos %}
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th></th>
+                                                <th></th>
+                                                <th>Fecha</th>
+                                                <th>Item</th>
+                                                <th>Cantidad</th>
+                                                <th>Presentación</th>
+                                                <th>Materia</th>
+                                                <th>Estado</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for pedido in pedidos %}
+                                            <tr>
+
+                                                <td><span class="pull-left"><a href="/pedidos/editar/{{pedido.item.pk}}/" class="icon-block"><i class="fa fa-pencil"></i></a></span></td>
+                                                <td><span class="pull-left"><a href="/pedidos/borrar/{{pedido.item.pk}}/" class="icon-block"><i class="fa fa-trash"></i></a></span></td>
+                                                <td>{{pedido.item.fecha}}</td>
+                                                <td>{{pedido.item.item}}</td>
+                                                <td>{{pedido.item.cantidad}}</td>
+                                                <td>
+                                                    {% if pedido.item.presentacion == "U" %}
+                                                        Unidades
+                                                    {% elif pedido.item.presentacion == "P" %}
+                                                        Paquetes
+                                                    {% endif %}
+                                                </td>
+                                                <td>{{pedido.item.materia.grupo.nombre}} - {{pedido.item.materia.materia.nombre}}</td>
+                                                <td>
+                                                    {% if pedido.fecha_aprobacion == None %}
+                                                        Por aprobar
+                                                    {% else %}
+                                                        Aprobado
+                                                    {% endif %}
+                                                </td>
+
+
+
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                     {% else %}
+                                        No tiene pedidos pendientes.
+                                    {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="page-header" style="margin: 10px 0 10px;">
+                                <h2>Resumen de Pedidos<h2>
+                        </div>
+                        <div class="panel">
+                        <div class="panel-body">
+
+                            Hola carambola
+                        </div>
+                        </div>
+                    </div>
+                </div>
+
 
 {% endblock %}
 

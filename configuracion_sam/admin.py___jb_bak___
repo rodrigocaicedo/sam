@@ -35,14 +35,25 @@ admin.site.register(CustomUser, CustomUserAdmin)
 
 admin.site.register(Periodo_Lectivo)
 admin.site.register(Subperiodo)
+admin.site.register(Estructura_Subperiodo)
 admin.site.register(Clase)
+admin.site.register(Representante)
 admin.site.register(Estudiante)
+admin.site.register(Coordinador_Area_Academica)
+admin.site.register(Coordinador_Seccion)
+admin.site.register(Coordinadores_De_Area_Academica)
+admin.site.register(Coordinadores_De_Seccion)
+admin.site.register(Area_Academica)
+admin.site.register(Seccion)
 admin.site.register(Profesor)
 admin.site.register(Matricula)
+admin.site.register(Malla_Curricular)
+admin.site.register(Grupo)
+admin.site.register(Inscripcion_Grupo)
 admin.site.register(Materia)
-admin.site.register(Carga_Horario)
-admin.site.register(Representante)
-admin.site.register(Estructura_Subperiodo)
+admin.site.register(Pensum)
+
+
 
 
 # Register your models here.

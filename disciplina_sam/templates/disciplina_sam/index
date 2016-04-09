@@ -18,7 +18,7 @@ Lista de últimas faltas
     <tbody>
     {% for clase in clases %}
         <tr>
-            <td><a>{{clase.clase_name}}</a></td>
+            <td><a href="/">{{clase.clase_name}}</a></td>
             <td><a href="/">{{clase.nivel}}</td>
         </tr>
     {% endfor %}

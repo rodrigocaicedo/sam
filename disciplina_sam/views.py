@@ -6,7 +6,7 @@ from django.template.loader import render_to_string
 
 from datetime import date, timedelta
 
-from configuracion_sam.models import Matricula, Carga_Horario, Clase, Periodo_Lectivo, Estructura_Subperiodo
+from configuracion_sam.models import Matricula, Pensum, Clase, Periodo_Lectivo, Estructura_Subperiodo
 
 from disciplina_sam.models import Falta, Seguimiento_De_Falta, Categoria
 from disciplina_sam.forms import FaltaForma, AccionForma, CategoriaForm
@@ -34,18 +34,17 @@ def ac_profesor_busqueda(request):
     schoolyear = request.session['schoolyear']
     if request.is_ajax():
         q = request.GET.get('term', '')
-        if Carga_Horario.objects.filter(profesor__usuario__name__icontains=q, activo=True,
-                                             materia__clase__periodo_lectivo__name__icontains=schoolyear)[:20].exists():
-            drugs = Carga_Horario.objects.filter(profesor__usuario__name__icontains=q, activo=True,
-                                             materia__clase__periodo_lectivo__name__icontains=schoolyear)[:20]
+        if Pensum.objects.filter(profesor__usuario__name__icontains=q, activo=True,
+                                             grupo__periodo_lectivo__name__icontains=schoolyear)[:20].exists():
+            drugs = Pensum.objects.filter(profesor__usuario__name__icontains=q, activo=True,
+                                             grupo__periodo_lectivo__name__icontains=schoolyear)[:20]
         else:
-            drugs = Carga_Horario.objects.filter(materia__nombre__icontains=q, activo=True,
-                                             materia__clase__periodo_lectivo__name__icontains=schoolyear)[:20]
+            drugs = Pensum.objects.filter(catedra__nombre__icontains=q, activo=True,
+                                             grupo__periodo_lectivo__name__icontains=schoolyear)[:20]
         results = []
 
         for drug in drugs:
             drug_json = {}
-            #drug_json['value'] = drug.profesor.usuario.name
             drug_json["value"] = drug.profesor.usuario.name
             if drug_json in results:
                 pass
@@ -61,13 +60,13 @@ def ac_profesor(request):
     schoolyear = request.session['schoolyear']
     if request.is_ajax():
         q = request.GET.get('term', '')
-        if Carga_Horario.objects.filter(profesor__usuario__name__icontains=q, activo=True,
-                                             materia__clase__periodo_lectivo__name__icontains=schoolyear)[:20].exists():
-            drugs = Carga_Horario.objects.filter(profesor__usuario__name__icontains=q, activo=True,
-                                             materia__clase__periodo_lectivo__name__icontains=schoolyear)[:20]
+        if Pensum.objects.filter(profesor__usuario__name__icontains=q, activo=True,
+                                             grupo__periodo_lectivo__name__icontains=schoolyear)[:20].exists():
+            drugs = Pensum.objects.filter(profesor__usuario__name__icontains=q, activo=True,
+                                             grupo__periodo_lectivo__name__icontains=schoolyear)[:20]
         else:
-            drugs = Carga_Horario.objects.filter(materia__nombre__icontains=q, activo=True,
-                                             materia__clase__periodo_lectivo__name__icontains=schoolyear)[:20]
+            drugs = Pensum.objects.filter(materia__nombre__icontains=q, activo=True,
+                                             grupo__periodo_lectivo__name__icontains=schoolyear)[:20]
         results = []
 
         for drug in drugs:
@@ -101,11 +100,11 @@ def ac_categoria(request):
     return HttpResponse(data, mimetype)
 
 def index(request):
-
+    context = RequestContext(request)
+    schoolyear=request.session['schoolyear']
     index = "Index"
-    clases = Clase.objects.all().order_by('nivel')
-    context = {'clases': clases, "index":index}
-    return render(request, 'disciplina_sam/index', context)
+    clases = Clase.objects.filter(periodo_lectivo__name__icontains=schoolyear)#.order_by('nivel')
+    return render_to_response('disciplina_sam/index', {'clases': clases, "index":index},context)
 
 def disciplina(request):
     disciplina2 = "Disciplina"
@@ -132,7 +131,7 @@ def busqueda_disciplina(request):
                     reportes = Falta.objects.filter(matricula__clase__periodo_lectivo__name=schoolyear, fecha=q_fecha,
                                                     activo=True,
                                                     matricula__estudiante__usuario__name__icontains=q_estudiante,
-                                                    carga_horario__profesor__usuario__name__icontains=q_profesor, categoria__nombre__icontains = q_categoria).order_by(
+                                                    pensum__profesor__usuario__name__icontains=q_profesor, categoria__nombre__icontains = q_categoria).order_by(
                         "-fecha")
                     return render_to_response('disciplina_sam/reportes',
                                               {"nuevo": False, "results": reportes, "debug": q_estudiante, "disciplina":disciplina2}, context)
@@ -140,14 +139,14 @@ def busqueda_disciplina(request):
                     reportes = Falta.objects.filter(matricula__clase__periodo_lectivo__name=schoolyear, fecha=q_fecha,
                                                     activo=False,
                                                     matricula__estudiante__usuario__name__icontains=q_estudiante,
-                                                    carga_horario__profesor__usuario__name__icontains=q_profesor, categoria__nombre__icontains = q_categoria).order_by(
+                                                    pensum__profesor__usuario__name__icontains=q_profesor, categoria__nombre__icontains = q_categoria).order_by(
                         "-fecha")
                     return render_to_response('disciplina_sam/reportes',
                                               {"nuevo": False, "results": reportes, "debug": q_estudiante, "disciplina":disciplina2}, context)
             else:
                 reportes = Falta.objects.filter(matricula__clase__periodo_lectivo__name=schoolyear, fecha=q_fecha,
                                                 matricula__estudiante__usuario__name__icontains=q_estudiante,
-                                                carga_horario__profesor__usuario__name__icontains=q_profesor, categoria__nombre__icontains = q_categoria).order_by(
+                                                pensum__profesor__usuario__name__icontains=q_profesor, categoria__nombre__icontains = q_categoria).order_by(
                     "-fecha")
                 return render_to_response('disciplina_sam/reportes',
                                           {"nuevo": False, "results": reportes, "debug": q_estudiante, "disciplina":disciplina2}, context)
@@ -157,21 +156,21 @@ def busqueda_disciplina(request):
                 if q_estado == "Activo":
                     reportes = Falta.objects.filter(matricula__clase__periodo_lectivo__name=schoolyear, activo=True,
                                                     matricula__estudiante__usuario__name__icontains=q_estudiante,
-                                                    carga_horario__profesor__usuario__name__icontains=q_profesor, categoria__nombre__icontains = q_categoria).order_by(
+                                                    pensum__profesor__usuario__name__icontains=q_profesor, categoria__nombre__icontains = q_categoria).order_by(
                         "-fecha")
                     return render_to_response('disciplina_sam/reportes',
                                               {"nuevo": False, "results": reportes, "debug": q_estudiante, "disciplina":disciplina2}, context)
                 elif q_estado == "No activo":
                     reportes = Falta.objects.filter(matricula__clase__periodo_lectivo__name=schoolyear, activo=False,
                                                     matricula__estudiante__usuario__name__icontains=q_estudiante,
-                                                    carga_horario__profesor__usuario__name__icontains=q_profesor, categoria__nombre__icontains = q_categoria).order_by(
+                                                    pensum__profesor__usuario__name__icontains=q_profesor, categoria__nombre__icontains = q_categoria).order_by(
                         "-fecha")
                     return render_to_response('disciplina_sam/reportes',
                                               {"nuevo": False, "results": reportes, "debug": q_estudiante, "disciplina":disciplina2}, context)
             else:
                 reportes = Falta.objects.filter(matricula__clase__periodo_lectivo__name=schoolyear,
                                                 matricula__estudiante__usuario__name__icontains=q_estudiante,
-                                                carga_horario__profesor__usuario__name__icontains=q_profesor, categoria__nombre__icontains = q_categoria).order_by(
+                                                pensum__profesor__usuario__name__icontains=q_profesor, categoria__nombre__icontains = q_categoria).order_by(
                     "-fecha")
                 return render_to_response('disciplina_sam/reportes',
                                           {"nuevo": False, "results": reportes, "debug": q_estudiante, "disciplina":disciplina2}, context)
@@ -195,7 +194,8 @@ def crear(request):
 
         nombre_categoria = data["categoria"]
         try:
-            id_estudiante = Matricula.objects.get(estudiante__usuario__name__icontains=nombre_estudiante,clase__periodo_lectivo__name=schoolyear)
+            id_estudiante = Matricula.objects.get(estudiante__usuario__name__icontains=nombre_estudiante,
+                                                  clase__periodo_lectivo__name=schoolyear)
             data["matricula"] = id_estudiante.id
             resultado_estudiante = nombre_estudiante
         except:
@@ -203,10 +203,10 @@ def crear(request):
             resultado_estudiante = None
 
         try:
-            id_profesor = Carga_Horario.objects.get(profesor__usuario__name__icontains = nombre_profesor,
-                                                materia__nombre__icontains=nombre_materia,
-                                                materia__clase__periodo_lectivo__name=schoolyear,
-                                                materia__clase__clase_name = id_estudiante.clase.clase_name)
+            id_profesor = Pensum.objects.get(profesor__usuario__name__icontains = nombre_profesor,
+                                                catedra__nombre__icontains=nombre_materia,
+                                                grupo__periodo_lectivo__name=schoolyear,
+                                                grupo__nombre = id_estudiante.clase.clase_name)
             data["carga_horario"] = id_profesor.id
             resultado_profesor = nombre_profesor_sinformato
         except:
@@ -219,7 +219,7 @@ def crear(request):
             form.errors["matricula"] = "The student is not registered."
 
         if id_profesor == None:
-            form.errors["carga_horario"] = "The student does not attend to that class"
+            form.errors["pensum"] = "The student does not attend to that class"
 
 
 
@@ -405,10 +405,10 @@ def editar(request, falta_id):
             resultado_estudiante = None
 
         try:
-            id_profesor = Carga_Horario.objects.get(profesor__usuario__name__icontains = nombre_profesor,
-                                                materia__nombre__icontains=nombre_materia,
-                                                materia__clase__periodo_lectivo__name=schoolyear,
-                                                materia__clase__clase_name = id_estudiante.clase.clase_name)
+            id_profesor = Pensum.objects.get(profesor__usuario__name__icontains = nombre_profesor,
+                                                catedra__nombre__icontains=nombre_materia,
+                                                grupo__periodo_lectivo__name=schoolyear,
+                                                grupo__nombre = id_estudiante.clase.clase_name)
             data["carga_horario"] = id_profesor.id
             resultado_profesor = nombre_profesor_sinformato
         except:
@@ -421,7 +421,7 @@ def editar(request, falta_id):
             form.errors["matricula"] = "The student is not registered."
 
         if id_profesor == None:
-            form.errors["carga_horario"] = "The student does not attend to that class"
+            form.errors["pensum"] = "The student does not attend to that class"
 
 
         if form.is_valid():
@@ -434,8 +434,8 @@ def editar(request, falta_id):
     else:
         form = FaltaForma(instance = falta)
         nombre_matricula = falta.matricula.estudiante.usuario.name
-        nombre_carga_horario = falta.carga_horario.materia.nombre + " -- " + falta.carga_horario.profesor.usuario.name
-        return render_to_response('disciplina_sam/editar_registro', {'form': form, "falta":falta, "nombre_matricula":nombre_matricula, "nombre_carga_horario":nombre_carga_horario, "disciplina":disciplina2}, context)
+        nombre_pensum = falta.pensum.catedra.nombre + " -- " + falta.pensum.profesor.usuario.name
+        return render_to_response('disciplina_sam/editar_registro', {'form': form, "falta":falta, "nombre_matricula":nombre_matricula, "nombre_pensum":nombre_pensum, "disciplina":disciplina2}, context)
 
 def cambiar_estado_disciplina(request, registro_id):
     registro = Falta.objects.get(pk=registro_id)

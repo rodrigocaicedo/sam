@@ -36,7 +36,8 @@ TEMPLATE_CONTEXT_PROCESSORS = ("django.contrib.auth.context_processors.auth",
 "django.core.context_processors.tz",
 "django.core.context_processors.request",
 "django.contrib.messages.context_processors.messages",
-"configuracion_sam.processors.schoolyear_list")
+"configuracion_sam.processors.schoolyear_list",
+"disciplina_sam.processors.schoolyear_list",)
 
 # Application definition
 
@@ -101,6 +102,10 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
+
+MEDIA_ROOT = "/home/rodrigo/montebello/sam/uploads/"
+
+MEDIA_URL = "/uploads/"
 
 STATIC_URL = '/static/'
 
